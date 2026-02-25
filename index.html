@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>futae.net | 新宿二重整形AI診断 V22.8</title>
+    <title>futae.net | 新宿二重整形AI診断 V22.9</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
       :root { --rose-gold: #C19281; --bg: #f5f5f5; --accent: #d63031; --gold: #d4af37; --success: #4caf50; --pink-bg: #fff5f5; }
@@ -14,6 +14,7 @@
       .header-right { width: 45px; text-align: right; font-size: 30px; cursor: pointer; }
       .menu-trigger { font-size: 32px; cursor: pointer; color: var(--rose-gold); width: 45px; }
 
+      /* 親指UI：並び替え */
       .sort-container { background: #fff; padding: 12px 5px; display: flex; gap: 10px; overflow-x: auto; -webkit-overflow-scrolling: touch; border-bottom: 1px solid #ddd; position: sticky; top: 80px; z-index: 900; }
       .sort-container::-webkit-scrollbar { display: none; }
       .sort-btn { flex: 0 0 auto; background: #fff; border: 1px solid #ddd; padding: 10px 18px; border-radius: 30px; font-size: 0.85em; font-weight: bold; color: #666; cursor: pointer; }
@@ -26,10 +27,15 @@
 
       main { padding: 10px; max-width: 500px; margin: 0 auto; flex: 1; width: 100%; box-sizing: border-box; }
       
+      /* ランキング変動バッジ */
+      .trend-up { color: #2ecc71; font-size: 0.8em; font-weight: bold; margin-left: 5px; }
+      .trend-down { color: #e74c3c; font-size: 0.8em; font-weight: bold; margin-left: 5px; }
+      .trend-new { color: var(--gold); font-size: 0.8em; font-weight: bold; margin-left: 5px; }
+
       /* カードデザイン（1〜5位） */
       .card { background: #fff; border-radius: 15px; border: 1px solid #ddd; margin-bottom: 15px; cursor: pointer; overflow: hidden; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
       .card-rank1 { border: 3px solid var(--gold); box-shadow: 0 8px 25px rgba(212,175,55,0.25); }
-      .rank-badge { position: absolute; top: 0; left: 0; background: var(--rose-gold); color: #fff; padding: 4px 12px; font-size: 0.8em; font-weight: bold; border-radius: 0 0 12px 0; z-index: 10; }
+      .rank-badge { position: absolute; top: 0; left: 0; background: var(--rose-gold); color: #fff; padding: 4px 12px; font-size: 0.8em; font-weight: bold; border-radius: 0 0 12px 0; z-index: 10; display: flex; align-items: center; }
       .card-rank1 .rank-badge { background: var(--gold); }
       
       .img-container { background: #eee; height: 160px; width: 100%; overflow: hidden; }
@@ -37,16 +43,17 @@
 
       .rank-grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
       
-      /* リストデザイン（6位以下：横並び） */
+      /* リストデザイン（6位以下） */
       .list-item { background: #fff; border-radius: 12px; border: 1px solid #eee; margin-bottom: 8px; padding: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; position: relative; }
-      .list-rank-circle { width: 28px; height: 28px; background: #f0f0f0; color: #888; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8em; flex-shrink: 0; margin-right: 12px; }
+      .list-rank-circle { width: 32px; height: 32px; background: #f0f0f0; color: #888; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8em; flex-shrink: 0; margin-right: 12px; line-height: 1; }
+      .list-trend { font-size: 0.6em; margin-top: 2px; }
+      
       .list-info { flex: 1; min-width: 0; }
-      .list-name { font-weight: bold; font-size: 0.9em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+      .list-name { font-weight: bold; font-size: 0.9em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .list-score { font-size: 0.75em; color: var(--rose-gold); font-weight: bold; }
       .list-right { text-align: right; flex-shrink: 0; margin-left: 10px; }
       .list-price { color: var(--accent); font-weight: 900; font-size: 1em; }
-      .list-price-sub { font-size: 0.6em; color: #999; display: block; }
-
+      
       .price-tag { font-size: 1.25em; color: var(--accent); font-weight: 900; }
       .price-tag::after { content: " (目安)"; font-size: 0.5em; color: #888; margin-left: 4px; }
       .integrity-bar-bg { background: #eee; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 5px; width: 80%; }
@@ -55,7 +62,6 @@
       footer { background: #444; color: #fff; padding: 30px 20px; text-align: center; font-size: 0.8em; }
       #floating-panda { position: fixed; bottom: -120px; right: 20px; z-index: 4000; transition: 0.5s; }
       #floating-panda.show { bottom: 20px; }
-      .panda-bubble { position: absolute; bottom: 85px; right: 0; background: white; border: 2px solid var(--rose-gold); padding: 12px; border-radius: 18px; width: 220px; font-size: 13px; font-weight: bold; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
       #detail-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 6000; display: none; overflow-y: auto; }
       .modal-header { position: sticky; top: 0; width: 100%; padding: 15px; display: flex; justify-content: flex-end; z-index: 7000; }
       .close-btn { background: rgba(0,0,0,0.5); color: #fff; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
@@ -96,16 +102,13 @@
     <footer><p>&copy; 2026 futae.net | 嘘のない二重整形選びを。</p></footer>
 
     <div id="floating-panda">
-        <div class="panda-bubble" id="panda-bubble">
-            <div id="panda-talk">レイアウトを修正したパン！<br>右側に情報を集めたパン！🐼</div>
-        </div>
         <div style="font-size: 80px; cursor:pointer;" onclick="togglePandaMenu()">🐼</div>
     </div>
 
     <div id="detail-modal"><div class="modal-header"><div class="close-btn" onclick="closeModal()">✕</div></div><div id="modal-body"></div></div>
 
     <script>
-      const API_URL = "https://script.google.com/macros/s/AKfycbwwJA8Uv9wuMKq3Ih8Ako5f0RvZDkpvM6bkMNTAxglPAaqvCESCPYjDxFjBvXt5IpG0/exec";
+      const API_URL = "https://script.google.com/macros/s/AKfycbzGsn_yp4iNMjgrOOf_NQkQm5FbHcTliWKGsPPBBRtOjZ72bCwlrEnj7J_p1BnqLUMQ/exec";
       let globalClinics = [];
       let currentSort = 'ai';
 
@@ -155,12 +158,21 @@
           const actual = Number(item.actual_price || 0);
           const score = Number(item.total_score || 0).toFixed(1);
           const gap = (Number(item.gap_score) || 0) * 10;
-          const photo = sanitizeImageUrl(item.photo_url);
+          
+          // ランキング変動ロジック
+          const prevRank = Number(item.previous_rank) || 0;
+          let trendHTML = '';
+          if (currentSort === 'ai' && prevRank > 0) {
+              const diff = prevRank - rank;
+              if (diff > 0) trendHTML = `<span class="trend-up">▲${diff}</span>`;
+              else if (diff < 0) trendHTML = `<span class="trend-down">▼${Math.abs(diff)}</span>`;
+              else trendHTML = `<span style="color:#ccc; font-size:0.7em; margin-left:5px;">-</span>`;
+          }
 
           if (rank === 1) {
             r1 = `<div class="card card-rank1" onclick="openModal(${i})">
-                <div class="rank-badge">RANK 1 / ${score}点</div>
-                <div class="img-container"><img src="${photo}" loading="lazy"></div>
+                <div class="rank-badge">RANK 1 / ${score}点 ${trendHTML}</div>
+                <div class="img-container"><img src="${sanitizeImageUrl(item.photo_url)}" loading="lazy"></div>
                 <div style="padding:15px;">
                     <div class="clinic-name" style="font-size:1.1em;">${item['クリニック名']}</div>
                     <div class="price-tag">${actual.toLocaleString()}円</div>
@@ -169,8 +181,8 @@
             </div>`;
           } else if (rank <= 5) {
             grid += `<div class="card" onclick="openModal(${i})">
-                <div class="rank-badge">RANK ${rank}</div>
-                <div class="img-container" style="height:110px;"><img src="${photo}" loading="lazy"></div>
+                <div class="rank-badge">RANK ${rank} ${trendHTML}</div>
+                <div class="img-container" style="height:110px;"><img src="${sanitizeImageUrl(item.photo_url)}" loading="lazy"></div>
                 <div style="padding:10px;">
                     <div class="clinic-name" style="font-size:0.9em;">${item['クリニック名']}</div>
                     <div style="color:var(--rose-gold); font-weight:bold; font-size:0.8em;">AI判定 ${score}</div>
@@ -179,14 +191,16 @@
             </div>`;
           } else {
             list += `<div class="list-item" onclick="openModal(${i})">
-                <div class="list-rank-circle">${rank}</div>
+                <div class="list-rank-circle">
+                    ${rank}
+                    <div class="list-trend">${trendHTML}</div>
+                </div>
                 <div class="list-info">
                     <div class="list-name">${item['クリニック名']}</div>
                     <div class="list-score">AI判定 ${score} / 誠実度 ${gap}%</div>
                 </div>
                 <div class="list-right">
                     <div class="list-price">${actual.toLocaleString()}円</div>
-                    <span class="list-price-sub">(目安)</span>
                 </div>
             </div>`;
           }
