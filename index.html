@@ -201,12 +201,21 @@
 
       function closeModal() { document.getElementById('detail-modal').style.display='none'; }
       function openInfo(t) { 
-          const b = document.getElementById('modal-body');
-          closeMenu();
-          if (t==='story') b.innerHTML = '<div style="padding:20px;"><h2 style="text-align:center; color:var(--rose-gold);">Futae.net 誕生秘話</h2><img src="story1.png" class="manga-img" loading="lazy"><img src="story2.png" class="manga-img" loading="lazy"><img src="story3.png" class="manga-img" loading="lazy"><img src="story4.png" class="manga-img" loading="lazy"></div>';
-          else if (t==='contact') b.innerHTML = '<div style="padding:40px; text-align:center;"><h2>お問い合わせ</h2><p>📧 info@futae.net</p><p>パパが順次確認するパン！🐼</p></div>';
-          document.getElementById('detail-modal').style.display='block';
-      }
+    const b = document.getElementById('modal-body');
+    closeMenu();
+    if (t==='story') {
+        b.innerHTML = `
+            <div style="padding:20px;">
+                <h2 style="text-align:center; color:var(--rose-gold);">Futae.net 誕生秘話</h2>
+                <img src="story1.jpg" class="manga-img" loading="lazy">
+                <img src="story2.jpg" class="manga-img" loading="lazy">
+                <img src="story3.jpg" class="manga-img" loading="lazy">
+                <img src="story4.jpg" class="manga-img" loading="lazy">
+            </div>`;
+    } else if (t==='contact') {
+        b.innerHTML = '<div style="padding:40px; text-align:center;"><h2>お問い合わせ</h2><p>📧 info@futae.net</p></div>';
+    }
+    document.getElementById('detail-modal').style.display='block';
       loadData();
       setTimeout(() => { document.getElementById('floating-panda').classList.add('show'); }, 3000);
     </script>
