@@ -3,228 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>futae.net | 新宿二重整形AI診断 V22.7</title>
+    <title>futae.net | 新宿二重整形AI診断 V23.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { 
-            --rose-gold: #C19281; --bg: #f5f5f5; --accent: #d63031; 
-            --gold: #d4af37; --success: #4caf50; --pink-bg: #fff5f5; 
-        }
-        body { background: var(--bg); color: #2d3436; font-family: "Hiragino Sans", sans-serif; margin: 0; padding: 0; line-height: 1.5; overflow-x: hidden; display: flex; flex-direction: column; min-height: 100vh; }
+        :root { --rose-gold: #C19281; --bg: #f8f9fa; --accent: #d63031; --gold: #d4af37; }
+        body { font-family: "Hiragino Sans", sans-serif; background: var(--bg); margin: 0; padding: 0; }
         
-        /* Header & Menu */
-        header { background: #fff; height: 80px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid #eee; }
-        .header-logo { height: 60px; width: auto; object-fit: contain; cursor: pointer; }
-        .menu-trigger { font-size: 32px; cursor: pointer; color: var(--rose-gold); width: 45px; }
-
-        /* Sort Buttons */
-        .sort-container { background: #fff; padding: 12px 5px; display: flex; gap: 10px; overflow-x: auto; -webkit-overflow-scrolling: touch; border-bottom: 1px solid #eee; position: sticky; top: 80px; z-index: 900; }
-        .sort-container::-webkit-scrollbar { display: none; }
-        .sort-btn { flex: 0 0 auto; background: #fff; border: 2px solid #eee; padding: 12px 20px; border-radius: 30px; font-size: 0.85em; font-weight: bold; color: #555; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s ease; cursor: pointer; }
-        .sort-btn.active { background: var(--rose-gold); color: white; border-color: var(--rose-gold); transform: scale(1.05); }
-
-        /* Sidebar */
-        #side-menu { position: fixed; top: 0; left: -300px; width: 300px; height: 100%; background: white; z-index: 5000; transition: 0.4s; box-shadow: 5px 0 15px rgba(0,0,0,0.1); overflow-y: auto; }
-        #side-menu.open { left: 0; }
-        #menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 4500; display: none; }
-        .menu-item { padding: 20px; border-bottom: 1px solid #eee; font-weight: bold; cursor: pointer; }
-
-        /* Main Content & Cards */
-        main { padding: 10px; max-width: 500px; margin: 0 auto; flex: 1; width: 100%; box-sizing: border-box; }
-        .card { background: #fff; border-radius: 15px; border: 1px solid #ddd; margin-bottom: 15px; cursor: pointer; overflow: hidden; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: 0.3s; }
-        .card-rank1 { border: 3px solid var(--gold); box-shadow: 0 8px 25px rgba(212,175,55,0.2); }
-        .rank-badge { position: absolute; top: 0; left: 0; background: var(--rose-gold); color: #fff; padding: 3px 15px; font-size: 0.8em; font-weight: bold; border-radius: 0 0 12px 0; z-index: 10; }
-        .rank-up { font-size: 0.8em; margin-left: 5px; color: #fff; font-weight: bold; }
+        /* 1位・グリッド・リストの出し分け */
+        main { max-width: 500px; margin: 0 auto; padding: 10px; }
         
-        .img-container { background: #eee; height: 180px; width: 100%; overflow: hidden; }
-        .img-container img { width: 100%; height: 100%; object-fit: cover; }
+        /* 基本カード */
+        .card { background: #fff; border-radius: 12px; margin-bottom: 12px; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden; cursor: pointer; }
         
-        .rank-grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        /* 1位：特大 */
+        .card-rank1 { border: 3px solid var(--gold); }
+        .card-rank1 .img-container { height: 200px; }
+
+        /* 2-5位：グリッド用（JSで制御） */
+        .rank-grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+
+        /* 6位以降：コンパクトリスト */
+        .card-compact { display: flex; align-items: center; padding: 10px; }
+        .card-compact .compact-info { flex: 1; padding-left: 10px; }
+        .card-compact .price-tag { font-size: 1em; margin: 0; }
+
+        /* バッジの重なり修正 */
+        .rank-badge { position: absolute; top: 0; left: 0; background: var(--rose-gold); color: #fff; padding: 4px 12px; font-size: 0.75em; font-weight: bold; border-radius: 0 0 10px 0; z-index: 10; }
+
+        /* レーダーチャートのコンテナ */
+        .chart-container { width: 100%; max-width: 300px; margin: 0 auto; }
+
+        /* モーダル内の全データ表示用スタイル */
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85em; }
+        .data-table th, .data-table td { border-bottom: 1px solid #eee; padding: 8px; text-align: left; }
+        .data-table th { color: var(--rose-gold); width: 40%; }
         
-        /* Clinic Details in Card */
-        .clinic-name { font-weight: bold; font-size: 0.95em; height: 2.8em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 5px; }
-        .score-display { color: var(--rose-gold); font-weight: bold; font-size: 1.1em; margin-bottom: 5px; }
-        .price-tag { font-size: 1.2em; color: var(--accent); font-weight: 900; margin: 5px 0; }
-        .price-tag::after { content: " (実際目安)"; font-size: 0.5em; color: #888; font-weight: normal; margin-left: 4px; }
-        
-        .downtime-small { font-size: 0.75em; color: var(--rose-gold); background: var(--pink-bg); padding: 4px 8px; border-radius: 5px; margin-top: 5px; display: inline-block; }
-
-        /* Panda Floating */
-        #floating-panda { position: fixed; bottom: -120px; right: 20px; z-index: 4000; transition: 0.5s; }
-        #floating-panda.show { bottom: 20px; }
-        .panda-bubble { position: absolute; bottom: 85px; right: 0; background: white; border: 2px solid var(--rose-gold); padding: 12px; border-radius: 18px; width: 220px; font-size: 12px; font-weight: bold; box-shadow: 0 5px 20px rgba(0,0,0,0.1); display:none; }
-        .panda-bubble.active { display: block; }
-
-        /* Modal */
-        #detail-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 6000; display: none; overflow-y: auto; }
-        .modal-header { position: sticky; top: 0; width: 100%; padding: 15px; display: flex; justify-content: flex-end; z-index: 7000; box-sizing: border-box; }
-        .close-btn { background: rgba(0,0,0,0.5); color: #fff; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .db-section { padding: 20px; border-bottom: 8px solid #f5f5f5; }
-        .db-label { font-size: 0.85em; color: var(--rose-gold); font-weight: bold; margin-bottom: 10px; display: block; border-left: 5px solid var(--rose-gold); padding-left: 10px; }
-
-        footer { background: #444; color: #fff; padding: 30px 20px; text-align: center; font-size: 0.8em; }
+        /* その他の既存スタイル継承 */
+        header { background: #fff; height: 70px; display: flex; align-items: center; justify-content: center; border-bottom: 2px solid #eee; position: sticky; top: 0; z-index: 1000; }
+        .header-logo { height: 50px; }
+        footer { padding: 40px 20px; text-align: center; font-size: 0.8em; color: #888; }
     </style>
 </head>
 <body>
-    <div id="menu-overlay" onclick="closeMenu()"></div>
-    <nav id="side-menu">
-        <div style="padding: 40px 20px; background: var(--rose-gold); color: white; text-align: center; font-weight: bold; font-size: 1.4em;">futae.net</div>
-        <div class="menu-item" onclick="openInfo('story')">🧭 Futae.netの正義 (マンガ)</div>
-        <div class="menu-item" onclick="openInfo('logic')">🤖 AI判定の仕組み</div>
-        <div class="menu-item" onclick="openInfo('contact')">📩 お問い合わせ</div>
-    </nav>
 
-    <header>
-        <div class="menu-trigger" onclick="openMenu()">☰</div>
-        <img src="futae_net_final_logo.png" alt="logo" class="header-logo" onclick="location.reload()">
-        <div style="width:45px;"></div>
-    </header>
+<header>
+    <img src="futae_net_final_logo.png" alt="logo" class="header-logo">
+</header>
 
-    <div class="sort-container">
-        <div class="sort-btn active" id="sort-ai" onclick="sort('ai')">🤖 AI判定順</div>
-        <div class="sort-btn" id="sort-price" onclick="sort('price')">💰 コスパ順</div>
-        <div class="sort-btn" id="sort-tech" onclick="sort('tech')">💉 技術スコア順</div>
-        <div class="sort-btn" id="sort-gap" onclick="sort('gap')">⚖️ 正直度順</div>
-    </div>
+<main id="main-content">
+    <div id="rank-1-area"></div>
+    <div id="rank-grid-area" class="rank-grid-container"></div>
+    <div id="rank-list-area"></div>
+</main>
 
-    <main id="main-content">
-        <div id="loading-msg" style="text-align:center; padding-top:100px;">
-            <div style="font-size: 3em; margin-bottom: 15px;">🐼</div>
-            <div style="font-weight:bold; color:var(--rose-gold);">新宿の真実を計算中だパン...</div>
-        </div>
-        <div id="rank-1-area"></div>
-        <div id="rank-grid-area" class="rank-grid-container"></div>
-        <div id="rank-list-area"></div>
-    </main>
+<div id="detail-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#fff; z-index:9999; overflow-y:auto;">
+    <div style="padding:20px; text-align:right;"><button onclick="closeModal()" style="font-size:24px; border:none; background:none;">✕</button></div>
+    <div id="modal-body"></div>
+</div>
 
-    <footer>
-        <div style="margin-bottom:10px;">最終分析・データ更新日: 2026/02/26</div>
-        <p>&copy; 2026 futae.net | 嘘のない二重整形選びを。</p>
-    </footer>
+<script>
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/1WE5TRSmMxPFM5q5LSWyvNC9S8glgBKfyofIK-ZDncsY/export?format=csv&gid=0';
+    let clinics = [];
 
-    <div id="floating-panda">
-        <div class="panda-bubble" id="panda-bubble">
-            <div id="panda-talk">親指一本で「真実」を切り替えるパン！🐼</div>
-        </div>
-        <div style="font-size: 80px; cursor:pointer;" onclick="togglePandaBubble()">🐼</div>
-    </div>
+    async function loadData() {
+        const response = await fetch(csvUrl);
+        const csvText = await response.text();
+        Papa.parse(csvText, {
+            header: true,
+            complete: function(results) {
+                clinics = results.data.filter(c => String(c.status).toLowerCase().trim() === 'active');
+                render();
+            }
+        });
+    }
 
-    <div id="detail-modal">
-        <div class="modal-header"><div class="close-btn" onclick="closeModal()">✕</div></div>
-        <div id="modal-body"></div>
-    </div>
+    function render() {
+        let r1 = ''; let grid = ''; let list = '';
+        clinics.sort((a,b) => b.total_score - a.total_score).forEach((c, i) => {
+            const rank = i + 1;
+            const score = parseFloat(c.total_score).toFixed(2);
+            
+            if (rank === 1) {
+                r1 = `
+                <div class="card card-rank1" onclick="openModal(${i})">
+                    <div class="rank-badge">RANK ${rank}</div>
+                    <div class="img-container"><img src="${c.photo_url}" style="width:100%"></div>
+                    <div style="padding:15px;">
+                        <div style="color:var(--rose-gold); font-weight:bold;">AI総合判定 ${score}</div>
+                        <div style="font-size:1.2em; font-weight:bold;">${c.クリニック名}</div>
+                        <div style="color:var(--accent); font-size:1.3em; font-weight:900;">${parseInt(c.actual_price).toLocaleString()}円</div>
+                    </div>
+                </div>`;
+            } else if (rank <= 5) {
+                grid += `
+                <div class="card" onclick="openModal(${i})">
+                    <div class="rank-badge">RANK ${rank}</div>
+                    <div style="padding:35px 10px 10px 10px;">
+                        <div style="font-size:0.85em; font-weight:bold; height:2.4em; overflow:hidden;">${c.クリニック名}</div>
+                        <div style="color:var(--accent); font-weight:bold;">${parseInt(c.actual_price).toLocaleString()}円</div>
+                    </div>
+                </div>`;
+            } else {
+                list += `
+                <div class="card card-compact" onclick="openModal(${i})">
+                    <div style="font-weight:bold; color:var(--rose-gold); width:30px;">${rank}</div>
+                    <div class="compact-info">
+                        <div style="font-size:0.9em; font-weight:bold;">${c.クリニック名}</div>
+                    </div>
+                    <div style="color:var(--accent); font-weight:bold;">${parseInt(c.actual_price).toLocaleString()}円</div>
+                </div>`;
+            }
+        });
+        document.getElementById('rank-1-area').innerHTML = r1;
+        document.getElementById('rank-grid-area').innerHTML = grid;
+        document.getElementById('rank-list-area').innerHTML = list;
+    }
 
+    function openModal(i) {
+        const c = clinics[i];
+        document.getElementById('modal-body').innerHTML = `
+            <div style="padding:20px;">
+                <h2>${c.クリニック名}</h2>
+                <div class="chart-container"><canvas id="radarChart"></canvas></div>
+                <h3>🧔 お父さんのメモ</h3><p>${c.father_comment}</p>
+                <table class="data-table">
+                    <tr><th>公式価格</th><td>${c.official_price}</td></tr>
+                    <tr><th>実売目安</th><td>${c.actual_price}</td></tr>
+                    <tr><th>ダウンタイム</th><td>${c.downtime_info}</td></tr>
+                    <tr><th>正直度（乖離）</th><td>${c.gap_score}</td></tr>
+                </table>
+            </div>
+        `;
+        document.getElementById('detail-modal').style.display = 'block';
+        initChart(c);
+    }
 
+    function initChart(c) {
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['信頼性', '安全性', '技術力', 'コスパ'],
+                datasets: [{
+                    label: 'AI分析値',
+                    data: [c.score_trust, c.score_safety, c.score_tech, c.score_cost],
+                    backgroundColor: 'rgba(193, 146, 129, 0.2)',
+                    borderColor: 'rgba(193, 146, 129, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: { scales: { r: { min: 0, max: 5 } } }
+        });
+    }
 
-    <script>
-        const csvUrl = 'https://docs.google.com/spreadsheets/d/1WE5TRSmMxPFM5q5LSWyvNC9S8glgBKfyofIK-ZDncsY/export?format=csv&gid=0';
-        let globalClinics = [];
-        let currentSort = 'ai';
-
-        function cleanNumber(val) {
-            if (!val) return 0;
-            return parseFloat(String(val).replace(/[¥,円]/g, '')) || 0;
-        }
-
-        async function loadData() {
-            try {
-                const response = await fetch(csvUrl);
-                const csvText = await response.text();
-                Papa.parse(csvText, {
-                    header: true,
-                    skipEmptyLines: true,
-                    complete: function(results) {
-                        // statusがactiveのものだけを抽出
-                        globalClinics = results.data.filter(c => 
-                            String(c.status || '').trim().toLowerCase() === 'active'
-                        );
-                        document.getElementById('loading-msg').style.display = 'none';
-                        sort('ai');
-                        setTimeout(() => { document.getElementById('floating-panda').classList.add('show'); }, 2000);
-                    }
-                });
-            } catch (e) { console.error(e); }
-        }
-
-        function sort(type) {
-            currentSort = type;
-            document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('sort-' + type).classList.add('active');
-
-            globalClinics.sort((a, b) => {
-                if (type === 'ai') return cleanNumber(b.total_score) - cleanNumber(a.total_score);
-                if (type === 'price') return cleanNumber(a.actual_price) - cleanNumber(b.actual_price);
-                if (type === 'tech') return cleanNumber(b.score_tech) - cleanNumber(a.score_tech);
-                if (type === 'gap') return cleanNumber(a.gap_score) - cleanNumber(b.gap_score);
-                return 0;
-            });
-            render();
-        }
-
-        function render() {
-            let r1 = ''; let grid = ''; let list = '';
-            globalClinics.forEach((item, i) => {
-                const rank = i + 1;
-                const score = cleanNumber(item.total_score).toFixed(2);
-                const actual = cleanNumber(item.actual_price).toLocaleString();
-                const photo = item.photo_url || "https://via.placeholder.com/400x300?text=FUTAE.net";
-                
-                let rankDiffHtml = '';
-                if (item.previous_rank) {
-                    const diff = cleanNumber(item.previous_rank) - rank;
-                    if (diff > 0) rankDiffHtml = `<span class="rank-up">▲${diff}</span>`;
-                }
-
-                const cardHTML = `
-                    <div class="card ${rank===1?'card-rank1':''}" onclick="openModal(${i})">
-                        <div class="rank-badge">RANK ${rank}${rankDiffHtml}</div>
-                        ${rank<=5?`<div class="img-container"><img src="${photo}" loading="lazy"></div>`:''}
-                        <div style="padding:15px;">
-                            <div class="score-display">AI判定 ${score}</div>
-                            <div class="clinic-name">${item['クリニック名']}</div>
-                            <div class="price-tag">${actual}円</div>
-                            <div class="downtime-small">⏱ ${item.downtime_info}</div>
-                        </div>
-                    </div>`;
-
-                if (rank === 1) r1 = cardHTML;
-                else if (rank <= 5) grid += cardHTML;
-                else list += cardHTML;
-            });
-            document.getElementById('rank-1-area').innerHTML = r1;
-            document.getElementById('rank-grid-area').innerHTML = grid;
-            document.getElementById('rank-list-area').innerHTML = list;
-        }
-
-        function openModal(i) {
-            const item = globalClinics[i];
-            const score = cleanNumber(item.total_score).toFixed(2);
-            document.getElementById('modal-body').innerHTML = `
-                <div style="height:220px; background:#eee;"><img src="${item.photo_url}" style="width:100%; height:100%; object-fit:cover;"></div>
-                <div class="db-section"><h2>${item['クリニック名']}</h2><p style="color:var(--rose-gold); font-weight:bold; font-size:1.4em;">AI総合判定 ${score}</p></div>
-                <div class="db-section"><span class="db-label">⏱ ダウンタイム目安</span><p>${item.downtime_info}</p></div>
-                <div class="db-section"><span class="db-label">💸 実際目安価格</span><b style="color:var(--accent); font-size:1.6em;">${cleanNumber(item.actual_price).toLocaleString()}円</b><br><small>広告価格: ${cleanNumber(item.official_price).toLocaleString()}円</small></div>
-                <div class="db-section"><span class="db-label">🧔 お父さんの徹底調査メモ</span><p>${item.father_comment || '---'}</p></div>
-                <div class="db-section"><span class="db-label">👥 現場のリアルな声（AI要約）</span><p style="font-size:0.9em;">${item.review_summary || '---'}</p></div>
-                <div class="db-section"><span class="db-label">🐼 パンダのひとこと</span><p>${item.summary_intro || '応援してるパン！'}</p></div>
-                <div class="db-section"><a href="${item.official_url}" target="_blank" style="display:block; background:var(--rose-gold); color:#fff; text-align:center; padding:18px; border-radius:35px; text-decoration:none; font-weight:bold;">公式サイトで詳しく見る</a></div>
-            `;
-            document.getElementById('detail-modal').style.display='block';
-        }
-
-        /* UI Helpers */
-        function togglePandaBubble() { document.getElementById('panda-bubble').classList.toggle('active'); }
-        function openMenu() { document.getElementById('side-menu').classList.add('open'); document.getElementById('menu-overlay').style.display='block'; }
-        function closeMenu() { document.getElementById('side-menu').classList.remove('open'); document.getElementById('menu-overlay').style.display='none'; }
-        function closeModal() { document.getElementById('detail-modal').style.display='none'; }
-        function openInfo(t) { 
-            const b = document.getElementById('modal-body'); closeMenu();
-            if (t==='story') b.innerHTML = '<div style="padding:20px;"><h2>誕生秘話</h2><img src="story1.jpg" style="width:100%"><img src="story2.jpg" style="width:100%"></div>';
-            else if (t==='logic') b.innerHTML = '<div style="padding:40px;"><h2>AI判定ロジック</h2><p>価格乖離、専門医資格、口コミ鮮度を独自のアルゴリズムで計算しています。</p></div>';
-            document.getElementById('detail-modal').style.display='block';
-        }
-
-        loadData();
-    </script>
+    function closeModal() { document.getElementById('detail-modal').style.display = 'none'; }
+    loadData();
+</script>
 </body>
 </html>
