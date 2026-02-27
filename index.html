@@ -3,78 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>futae.net | 新宿二重整形AI診断 V23.5</title>
+    <title>futae.net | 新宿二重整形AI診断 V23.6</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --rose-gold: #C19281; --bg: #f8f9fa; --accent: #d63031; --gold: #d4af37; --pink-bg: #fff5f5; }
-        body { font-family: "Noto Sans JP", sans-serif; background: var(--bg); margin: 0; padding: 0; line-height: 1.5; color: #333; }
+        body { font-family: "Noto Sans JP", sans-serif; background: var(--bg); margin: 0; padding: 0; line-height: 1.5; color: #333; overflow-x: hidden; }
         
         /* --- Header --- */
         header { background: #fff; height: 90px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid #eee; }
         .header-logo { height: 50px; cursor: pointer; }
         .menu-trigger { font-size: 32px; cursor: pointer; color: var(--rose-gold); width: 60px; }
         .header-right { text-align: right; width: 60px; }
-        .header-update-mini { font-size: 10px; color: #999; margin-bottom: -5px; }
+        .header-update-mini { font-size: 10px; color: #999; margin-bottom: -5px; font-weight: bold; }
         .header-panda { font-size: 28px; cursor: pointer; }
 
-        /* --- Menu & Overlay --- */
+        /* --- Sidebar & Sort --- */
         #side-menu { position: fixed; top: 0; left: -300px; width: 300px; height: 100%; background: white; z-index: 5000; transition: 0.4s; box-shadow: 5px 0 15px rgba(0,0,0,0.1); }
         #side-menu.open { left: 0; }
         #menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 4500; display: none; }
-        .menu-item { padding: 20px; border-bottom: 1px solid #eee; font-weight: bold; cursor: pointer; }
+        .menu-header { padding: 40px 20px; background: var(--rose-gold); color: white; text-align: center; font-weight: bold; font-size: 1.4em; }
+        .menu-item { padding: 20px; border-bottom: 1px solid #eee; font-weight: bold; cursor: pointer; color: #333; }
 
-        /* --- Sort --- */
         .sort-container { background: #fff; padding: 10px 5px; display: flex; gap: 8px; overflow-x: auto; position: sticky; top: 90px; z-index: 900; border-bottom: 1px solid #eee; }
-        .sort-btn { flex: 0 0 auto; background: #fff; border: 2px solid #eee; padding: 8px 14px; border-radius: 20px; font-size: 0.75em; font-weight: bold; cursor: pointer; }
-        .sort-btn.active { background: var(--rose-gold); color: white; border-color: var(--rose-gold); }
+        .sort-btn { flex: 0 0 auto; background: #fff; border: 2px solid #eee; padding: 8px 14px; border-radius: 20px; font-size: 0.75em; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        .sort-btn.active { background: var(--rose-gold); color: white; border-color: var(--rose-gold); transform: scale(1.05); }
 
         /* --- Cards --- */
-        main { padding: 10px; max-width: 500px; margin: 0 auto; }
-        .card { background: #fff; border-radius: 12px; margin-bottom: 15px; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden; cursor: pointer; }
-        .card-rank1 { border: 3px solid var(--gold); }
+        main { padding: 10px; max-width: 500px; margin: 0 auto; box-sizing: border-box; }
+        .card { background: #fff; border-radius: 12px; margin-bottom: 15px; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden; cursor: pointer; border: 1px solid #eee; }
+        .card-rank1 { border: 3px solid var(--gold); box-shadow: 0 8px 25px rgba(212,175,55,0.2); }
         .rank-grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .img-container { height: 180px; background: #eee; }
         .card-grid .img-container { height: 130px; }
         .img-container img { width: 100%; height: 100%; object-fit: cover; }
-        .rank-badge { position: absolute; top: 0; left: 0; background: var(--rose-gold); color: #fff; padding: 3px 12px; font-size: 0.75em; font-weight: bold; border-radius: 0 0 10px 0; z-index: 10; }
+        .rank-badge { position: absolute; top: 0; left: 0; background: var(--rose-gold); color: #fff; padding: 4px 15px; font-size: 0.78em; font-weight: bold; border-radius: 0 0 12px 0; z-index: 10; }
 
-        /* --- Info Display --- */
-        .clinic-name { font-weight: bold; font-size: 1.05em; margin-bottom: 8px; color: #000; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.8em; }
-        .price-official { font-size: 0.75em; color: #999; text-decoration: none; display: block; margin-bottom: -2px; }
-        .price-actual { font-size: 1.25em; color: var(--accent); font-weight: 900; }
-        .score-row { font-size: 0.8em; color: var(--rose-gold); font-weight: bold; }
+        /* --- Info Text --- */
+        .card-body { padding: 15px; }
+        .clinic-name { font-weight: bold; font-size: 1.05em; margin-bottom: 8px; color: #000; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.8em; line-height: 1.4; }
+        .price-official { font-size: 0.75em; color: #999; margin-bottom: -1px; }
+        .price-actual { font-size: 1.2em; color: var(--accent); font-weight: 900; }
+        .score-row { font-size: 0.82em; color: var(--rose-gold); font-weight: bold; }
         .rev-count { font-size: 0.85em; color: #bbb; font-weight: normal; margin-left: 3px; }
 
-        /* --- Rank 6+ Compact Layout --- */
+        /* --- Compact Layout --- */
         .card-compact { display: flex; align-items: center; padding: 12px 15px; }
         .compact-rank { width: 30px; font-weight: bold; color: var(--rose-gold); font-size: 1.1em; }
-        .compact-info { flex: 1; padding: 0 10px; overflow: hidden; }
-        .compact-name { font-size: 0.95em; font-weight: bold; line-height: 1.3; margin-bottom: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .compact-right { text-align: right; min-width: 120px; }
+        .compact-info { flex: 1; padding-left: 10px; overflow: hidden; }
+        .compact-name { font-size: 0.95em; font-weight: bold; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 2px; }
+        .compact-right { text-align: right; min-width: 125px; }
         .compact-score-line { font-size: 0.7em; color: var(--rose-gold); font-weight: bold; margin-bottom: 2px; }
 
-        /* --- Modal --- */
+        /* --- Modal Elements --- */
         #detail-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 6000; display: none; overflow-y: auto; }
         .modal-header { position: sticky; top: 0; padding: 15px; display: flex; justify-content: flex-end; z-index: 7000; background: #fff; }
-        .close-btn { background: #666; color: #fff; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .close-btn { background: #666; color: #fff; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; }
         .db-section { padding: 20px; border-bottom: 8px solid #f5f5f5; }
-        .db-label { font-size: 0.85em; color: var(--rose-gold); font-weight: bold; margin-bottom: 10px; display: block; border-left: 5px solid var(--rose-gold); padding-left: 10px; }
-        .manga-img { width: 100%; height: auto; border-radius: 10px; margin-bottom: 10px; }
+        .db-label { font-size: 0.85em; color: var(--rose-gold); font-weight: bold; margin-bottom: 12px; display: block; border-left: 5px solid var(--rose-gold); padding-left: 10px; }
+        
+        .review-box { background: #f9f9f9; padding: 15px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 15px; font-size: 0.92em; line-height: 1.6; }
+        .panda-bubble { background: #fff5f5; border: 2px solid var(--rose-gold); padding: 12px; border-radius: 20px; position: relative; margin-bottom: 20px; font-size: 0.9em; font-weight: bold; }
+        .panda-bubble::after { content: ''; position: absolute; left: 30px; bottom: -12px; border-top: 12px solid var(--rose-gold); border-left: 10px solid transparent; border-right: 10px solid transparent; }
+        
+        .manga-img { width: 100%; height: auto; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .review-dummy-item { border-bottom: 1px solid #eee; padding: 12px 0; font-size: 0.85em; }
+        .rev-date { color: #999; font-size: 0.8em; margin-bottom: 4px; }
 
         /* --- Floating Panda --- */
-        #floating-panda { position: fixed; bottom: -150px; right: 20px; z-index: 4000; transition: 0.5s; }
-        #floating-panda.show { bottom: 20px; }
+        #floating-panda { position: fixed; bottom: -150px; right: 20px; z-index: 4000; transition: 0.5s; visibility: hidden; }
+        #floating-panda.show { bottom: 20px; visibility: visible; }
     </style>
 </head>
 <body>
 
     <div id="menu-overlay" onclick="closeMenu()"></div>
     <nav id="side-menu">
-        <div style="padding:40px 20px; background:var(--rose-gold); color:#fff; font-weight:bold;">futae.net</div>
+        <div class="menu-header">futae.net</div>
         <div class="menu-item" onclick="openInfo('story')">🧭 Futae.netの正義 (マンガ)</div>
         <div class="menu-item" onclick="openInfo('logic')">🤖 AI判定の仕組み</div>
+        <div class="menu-item" onclick="openInfo('contact')">📩 お問い合わせ</div>
     </nav>
 
     <header>
@@ -94,13 +103,17 @@
     </div>
 
     <main id="main-content">
+        <div id="loading-msg" style="text-align:center; padding-top:100px;">
+            <div style="font-size: 3em; margin-bottom: 15px;">🐼</div>
+            <div style="font-weight:bold; color:var(--rose-gold);">新宿の真実を分析中だパン...</div>
+        </div>
         <div id="rank-1-area"></div>
         <div id="rank-grid-area" class="rank-grid-container"></div>
         <div id="rank-list-area"></div>
     </main>
 
     <div id="floating-panda">
-        <div style="font-size: 80px; cursor:pointer;" onclick="alert('パンダだパン！')">🐼</div>
+        <div style="font-size: 80px; cursor:pointer;" onclick="alert('パンダコンシェルジュだパン！')">🐼</div>
     </div>
 
     <div id="detail-modal">
@@ -108,86 +121,105 @@
         <div id="modal-body"></div>
     </div>
 
+    <footer style="background:#444; color:#fff; padding:40px 20px; text-align:center; font-size:0.8em;">
+        最終更新日: 2026/02/26<br>&copy; 2026 futae.net
+    </footer>
+
+    
+
     <script>
         const csvUrl = 'https://docs.google.com/spreadsheets/d/1WE5TRSmMxPFM5q5LSWyvNC9S8glgBKfyofIK-ZDncsY/export?format=csv&gid=0';
         let globalData = [];
 
-        // 数値洗浄ロジックの強化
+        // 強力な数値洗浄ロジック
         function cleanNum(v) {
-            if(!v) return 0;
+            if (v === undefined || v === null || v === "") return 0;
             const n = parseFloat(String(v).replace(/[^\d.]/g, ''));
             return isNaN(n) ? 0 : n;
         }
 
         async function loadData() {
-            const res = await fetch(csvUrl);
-            const txt = await res.text();
-            Papa.parse(txt, {
-                header: true,
-                complete: function(r) {
-                    globalData = r.data.filter(c => String(c.status).toLowerCase().trim() === 'active');
-                    sort('ai');
-                    setTimeout(() => document.getElementById('floating-panda').classList.add('show'), 1500);
-                }
-            });
+            try {
+                const response = await fetch(csvUrl);
+                const csvText = await response.text();
+                Papa.parse(csvText, {
+                    header: true,
+                    skipEmptyLines: true,
+                    transformHeader: (h) => h.trim(), // ヘッダーの空白を削除
+                    complete: function(results) {
+                        globalData = results.data.filter(c => 
+                            String(c.status || '').trim().toLowerCase() === 'active' && c['クリニック名']
+                        );
+                        document.getElementById('loading-msg').style.display = 'none';
+                        sort('ai');
+                        setTimeout(() => document.getElementById('floating-panda').classList.add('show'), 1500);
+                    }
+                });
+            } catch (e) { console.error(e); }
         }
 
         function sort(type) {
             document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('sort-'+type).classList.add('active');
-            globalData.sort((a,b) => {
-                if(type==='ai') return cleanNum(b.total_score) - cleanNum(a.total_score);
-                if(type==='price') return cleanNum(a.actual_price) - cleanNum(b.actual_price);
-                if(type==='tech') return cleanNum(b.score_tech) - cleanNum(a.score_tech);
-                if(type==='review') return cleanNum(b.review_total_count) - cleanNum(a.review_total_count);
+            document.getElementById('sort-' + type).classList.add('active');
+
+            globalData.sort((a, b) => {
+                if (type === 'ai') return cleanNum(b.total_score) - cleanNum(a.total_score);
+                if (type === 'price') return cleanNum(a.actual_price) - cleanNum(b.actual_price);
+                if (type === 'tech') return cleanNum(b.score_tech) - cleanNum(a.score_tech);
+                if (type === 'review') return cleanNum(b.review_total_count) - cleanNum(a.review_total_count);
+                return 0;
             });
             render();
         }
 
         function render() {
-            let r1='', grid='', list='';
-            globalData.forEach((c, i) => {
-                const rank = i+1;
-                const score = cleanNum(c.total_score).toFixed(2);
-                const rCount = cleanNum(c.review_total_count).toLocaleString();
-                const offPrice = cleanNum(c.official_price).toLocaleString();
-                const actPrice = cleanNum(c.actual_price).toLocaleString();
+            let r1 = ''; let grid = ''; let list = '';
+            globalData.forEach((item, i) => {
+                const rank = i + 1;
+                const score = cleanNum(item.total_score).toFixed(2);
+                const rCount = cleanNum(item.review_total_count).toLocaleString();
+                const offP = cleanNum(item.official_price).toLocaleString();
+                const actP = cleanNum(item.actual_price).toLocaleString();
+                const photo = item.photo_url || "https://via.placeholder.com/400x300";
                 
-                if(rank===1) {
-                    r1 = `<div class="card card-rank1" onclick="openModal(${i})">
+                if (rank === 1) {
+                    r1 = `
+                    <div class="card card-rank1" onclick="openModal(${i})">
                         <div class="rank-badge">RANK 1</div>
-                        <div class="img-container"><img src="${c.photo_url}"></div>
-                        <div style="padding:15px;">
-                            <div class="clinic-name">${c.クリニック名}</div>
+                        <div class="img-container"><img src="${photo}" loading="lazy"></div>
+                        <div class="card-body">
+                            <h2 class="clinic-name">${item['クリニック名']}</h2>
                             <div style="display:flex; justify-content:space-between; align-items:flex-end;">
                                 <div>
-                                    <div class="price-official">📢 広告最安: ${offPrice}円</div>
-                                    <div class="price-actual">💸 実勢目安: ${actPrice}円</div>
+                                    <div class="price-official">📢 広告最安: ${offP}円</div>
+                                    <div class="price-actual">💸 実勢目安: ${actP}円</div>
                                 </div>
                                 <div class="score-row">AI判定 ${score}<span class="rev-count">(${rCount}件)</span></div>
                             </div>
                         </div>
                     </div>`;
-                } else if(rank<=5) {
-                    grid += `<div class="card card-grid" onclick="openModal(${i})">
+                } else if (rank <= 5) {
+                    grid += `
+                    <div class="card card-grid" onclick="openModal(${i})">
                         <div class="rank-badge">RANK ${rank}</div>
-                        <div class="img-container"><img src="${c.photo_url}"></div>
-                        <div style="padding:10px;">
-                            <div class="clinic-name" style="font-size:0.9em; min-height:2.6em;">${c.クリニック名}</div>
-                            <div class="price-official" style="font-size:0.65em;">📢 ${offPrice}円</div>
+                        <div class="img-container"><img src="${photo}" loading="lazy"></div>
+                        <div class="card-body" style="padding:10px;">
+                            <div class="clinic-name" style="font-size:0.92em; min-height:2.6em;">${item['クリニック名']}</div>
+                            <div class="price-official" style="font-size:0.65em;">📢 ${offP}円</div>
                             <div style="display:flex; justify-content:space-between; align-items:baseline;">
-                                <div class="price-actual" style="font-size:1em;">💸 ${actPrice}円</div>
+                                <div class="price-actual" style="font-size:1em;">💸 ${actP}円</div>
                                 <div class="score-row" style="font-size:0.65em;">${score}</div>
                             </div>
                         </div>
                     </div>`;
                 } else {
-                    list += `<div class="card card-compact" onclick="openModal(${i})">
+                    list += `
+                    <div class="card card-compact" onclick="openModal(${i})">
                         <div class="compact-rank">${rank}</div>
-                        <div class="compact-info"><div class="compact-name">${c.クリニック名}</div></div>
+                        <div class="compact-info"><div class="compact-name">${item['クリニック名']}</div></div>
                         <div class="compact-right">
                             <div class="compact-score-line">AI判定 ${score} (${rCount}件)</div>
-                            <div class="price-actual" style="font-size:1em;">💸 ${actPrice}円</div>
+                            <div class="price-actual" style="font-size:1.05em;">💸 ${actP}円</div>
                         </div>
                     </div>`;
                 }
@@ -198,77 +230,96 @@
         }
 
         function openModal(i) {
-            const c = globalData[i];
-            const score = cleanNum(c.total_score).toFixed(2);
+            const item = globalData[i];
+            const score = cleanNum(item.total_score).toFixed(2);
+            const rCount = cleanNum(item.review_total_count).toLocaleString();
+            
+            // クチコミ10選（1位の中西クリニックのみダミー、他は準備中）
+            let reviewsHtml = '<p style="color:#999; font-size:0.85em;">最新クチコミデータを取得中だパン...</p>';
+            if(item['クリニック名'].includes('中西')) {
+                reviewsHtml = `
+                    <div class="review-dummy-item"><div class="rev-date">2026/02/15 ★5.0</div><div>先生が本当に職人気質。カウンセリングで「君の目ならこうするのが一番自然」とハッキリ言ってくれて、営業感がゼロだった。</div></div>
+                    <div class="review-dummy-item"><div class="rev-date">2026/01/22 ★4.8</div><div>待ち時間は少しあるが、それだけ一人一人を丁寧に診ている証拠。仕上がりは左右差もなく大満足。</div></div>
+                    <div class="review-dummy-item"><div class="rev-date">2026/01/05 ★5.0</div><div>広告の安さに釣られて他院で失敗したけど、ここで修正してもらって救われた。パパの言う通りだった。</div></div>
+                    <p style="font-size:0.7em; text-align:center; color:#ccc;">(以下、他7件のクチコミを省略)</p>`;
+            }
+
             document.getElementById('modal-body').innerHTML = `
-                <div style="height:200px;"><img src="${c.photo_url}" style="width:100%; height:100%; object-fit:cover;"></div>
+                <div style="height:220px;"><img src="${item.photo_url}" style="width:100%; height:100%; object-fit:cover;"></div>
                 <div class="db-section">
-                    <h2 style="margin:0;">${c.クリニック名}</h2>
-                    <p style="color:var(--rose-gold); font-weight:bold; font-size:1.3em;">AI判定 ${score} <span class="rev-count">(${cleanNum(c.review_total_count).toLocaleString()}件)</span></p>
+                    <h2 style="margin:0;">${item['クリニック名']}</h2>
+                    <p style="color:var(--rose-gold); font-weight:bold; font-size:1.4em; margin:8px 0;">AI総合判定 ${score} <span class="rev-count">(${rCount}件)</span></p>
                 </div>
                 <div class="db-section">
-                    <span class="db-label">📊 AI分析チャート</span>
-                    <div style="max-width:300px; margin:0 auto;"><canvas id="radarChart"></canvas></div>
+                    <span class="db-label">👥 現場のリアル（AI要約）</span>
+                    <div class="review-box">${item.review_summary || 'データ収集中だパン！'}</div>
                 </div>
                 <div class="db-section">
-                    <span class="db-label">🧔 お父さんの本音</span>
-                    <p style="font-size:0.95em;">${c.father_comment}</p>
+                    <span class="db-label">🐼 パンダの案内</span>
+                    <div class="panda-bubble">🐼 ${item.summary_intro || 'この院の魅力を調査中だパン！'}</div>
+                    <div class="chart-container"><canvas id="radarChart"></canvas></div>
                 </div>
                 <div class="db-section">
-                    <span class="db-label">📋 詳細データ</span>
-                    <table style="width:100%; font-size:0.9em;">
-                        <tr><th style="text-align:left; color:var(--rose-gold);">📢 広告最安</th><td>¥${cleanNum(c.official_price).toLocaleString()}</td></tr>
-                        <tr><th style="text-align:left; color:var(--rose-gold);">💸 実勢目安</th><td>¥${cleanNum(c.actual_price).toLocaleString()}</td></tr>
-                        <tr><th style="text-align:left; color:var(--rose-gold);">⏱ ダウンタイム</th><td>${c.downtime_info}</td></tr>
+                    <span class="db-label">🧔 お父さんの本音調査メモ</span>
+                    <p style="font-size:0.95em; margin:0;">${item.father_comment || '---'}</p>
+                </div>
+                <div class="db-section">
+                    <span class="db-label">📜 最新クチコミ 10選 (独自抜粋)</span>
+                    <div id="latest-reviews-area">${reviewsHtml}</div>
+                </div>
+                <div class="db-section">
+                    <span class="db-label">📋 詳細データ一覧</span>
+                    <table class="data-table">
+                        <tr><th>公式最安値</th><td>¥${cleanNum(item.official_price).toLocaleString()}</td></tr>
+                        <tr><th>実売目安</th><td>¥${cleanNum(item.actual_price).toLocaleString()}</td></tr>
+                        <tr><th>ダウンタイム</th><td>${item.downtime_info || '調査中'}</td></tr>
+                        <tr><th>価格乖離度</th><td>¥${cleanNum(item.gap_score).toLocaleString()}</td></tr>
                     </table>
                 </div>
-                <div style="padding:30px;"><a href="${c.official_url}" target="_blank" style="display:block; background:var(--rose-gold); color:#fff; text-align:center; padding:18px; border-radius:35px; text-decoration:none; font-weight:bold;">公式サイトをチェック</a></div>
+                <div style="padding:25px; margin-bottom:40px;">
+                    <a href="${item.official_url}" target="_blank" style="display:block; background:var(--rose-gold); color:#fff; text-align:center; padding:18px; border-radius:35px; text-decoration:none; font-weight:bold; font-size:1.1em;">公式サイトで詳しく見る</a>
+                </div>
             `;
             document.getElementById('detail-modal').style.display = 'block';
-            setTimeout(() => initRadar(c), 100);
+            setTimeout(() => initRadarChart(item), 150);
         }
 
-        function initRadar(c) {
-            new Chart(document.getElementById('radarChart'), {
+        function initRadarChart(item) {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            new Chart(ctx, {
                 type: 'radar',
                 data: {
                     labels: ['信頼性', '安全性', '技術力', 'コスパ'],
                     datasets: [{
-                        data: [cleanNum(c.score_trust), cleanNum(c.score_safety), cleanNum(c.score_tech), cleanNum(c.score_cost)],
-                        backgroundColor: 'rgba(193, 146, 129, 0.2)', borderColor: 'var(--rose-gold)', borderWidth: 2
+                        data: [cleanNum(item.score_trust), cleanNum(item.score_safety), cleanNum(item.score_tech), cleanNum(item.score_cost)],
+                        backgroundColor: 'rgba(193, 146, 129, 0.2)', borderColor: 'rgba(193, 146, 129, 1)', borderWidth: 2, pointBackgroundColor: 'rgba(193, 146, 129, 1)'
                     }]
                 },
-                options: { scales: { r: { min:0, max:5, ticks:{display:false} } }, plugins: { legend: {display:false} } }
+                options: { scales: { r: { min: 0, max: 5, ticks: { display: false } } }, plugins: { legend: { display: false } } }
             });
         }
 
-        function openInfo(t) {
-            const b = document.getElementById('modal-body');
-            closeMenu();
-            if(t==='story') {
-                b.innerHTML = `<div style="padding:20px; text-align:center;">
-                    <h2 style="color:var(--rose-gold);">FUTAE.net 誕生秘話</h2>
-                    <img src="story1.jpg" class="manga-img"><img src="story2.jpg" class="manga-img">
-                    <img src="story3.jpg" class="manga-img"><img src="story4.jpg" class="manga-img">
-                </div>`;
-            } else if(t==='logic') {
-                b.innerHTML = `<div style="padding:40px;">
-                    <h2>🤖 AI判定アルゴリズム</h2>
-                    <p style="background:#f5f5f5; padding:20px; border-radius:10px; font-family:monospace;">
-                        Score = (Trust × 0.4) + (Safety × 0.3) + (Tech × 0.2) + (PriceGap × 0.1)
-                    </p>
-                    <p style="font-size:0.9em; margin-top:20px;">
-                        Googleのクチコミ、医師の経歴、広告価格と実勢価格の乖離率を多角的に分析し、次女を安心して送り出せる院を算出しています。
-                    </p>
-                </div>`;
-            }
-            document.getElementById('detail-modal').style.display = 'block';
-        }
-
+        /* UI Controls */
         function togglePandaShow() { document.getElementById('floating-panda').classList.toggle('show'); }
         function openMenu() { document.getElementById('side-menu').classList.add('open'); document.getElementById('menu-overlay').style.display='block'; }
         function closeMenu() { document.getElementById('side-menu').classList.remove('open'); document.getElementById('menu-overlay').style.display='none'; }
         function closeModal() { document.getElementById('detail-modal').style.display = 'none'; }
+        function openInfo(t) { 
+            const b = document.getElementById('modal-body'); closeMenu();
+            if (t==='story') {
+                b.innerHTML = '<div style="padding:20px; text-align:center;"><h2>🧭 Futae.net 誕生秘話</h2><img src="story1.jpg" class="manga-img"><img src="story2.jpg" class="manga-img"><img src="story3.jpg" class="manga-img"><img src="story4.jpg" class="manga-img"></div>';
+            } else if (t==='logic') {
+                b.innerHTML = `<div style="padding:40px;"><h2>🤖 AI判定ロジック</h2>
+                <div style="background:#f5f5f5; padding:20px; border-radius:10px; font-family:monospace; margin-bottom:20px;">
+                    Score = (Trust×4 + Safety×3 + Tech×2 + Gap×1) / 10
+                </div>
+                <p>価格乖離率、専門医資格、最新のクチコミ内容を独自解析しています。次女を安心して送り出せる院を探すための指標です。</p></div>`;
+            } else if (t==='contact') {
+                b.innerHTML = '<div style="padding:40px; text-align:center;"><h2>📩 お問い合わせ</h2><p>info@futae.net</p></div>';
+            }
+            document.getElementById('detail-modal').style.display='block';
+        }
+
         loadData();
     </script>
 </body>
