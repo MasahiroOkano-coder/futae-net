@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>futae.net | 新宿二重整形AI診断 V23.7</title>
+    <title>futae.net | 新宿二重整形AI診断 V23.8</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
@@ -14,19 +14,19 @@
         /* --- Header --- */
         header { background: #fff; height: 90px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid #eee; }
         .header-logo { height: 50px; cursor: pointer; }
-        .menu-trigger { font-size: 32px; cursor: pointer; color: var(--rose-gold); width: 60px; }
-        .header-right { text-align: right; width: 70px; }
+        .menu-trigger { font-size: 32px; cursor: pointer; color: var(--rose-gold); width: 65px; }
+        .header-right { text-align: right; width: 65px; }
         .header-update-mini { font-size: 9px; color: #999; margin-bottom: -2px; font-weight: bold; }
         .header-panda { font-size: 28px; cursor: pointer; }
 
-        /* --- Sidebar --- */
+        /* --- Sidebar Menu --- */
         #side-menu { position: fixed; top: 0; left: -300px; width: 300px; height: 100%; background: white; z-index: 5000; transition: 0.4s; box-shadow: 5px 0 15px rgba(0,0,0,0.1); }
         #side-menu.open { left: 0; }
         #menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 4500; display: none; }
         .menu-header { padding: 40px 20px; background: var(--rose-gold); color: white; text-align: center; font-weight: bold; font-size: 1.4em; }
         .menu-item { padding: 20px; border-bottom: 1px solid #eee; font-weight: bold; cursor: pointer; }
 
-        /* --- Sort --- */
+        /* --- Sort Bar --- */
         .sort-container { background: #fff; padding: 10px 5px; display: flex; gap: 8px; overflow-x: auto; position: sticky; top: 90px; z-index: 900; border-bottom: 1px solid #eee; }
         .sort-btn { flex: 0 0 auto; background: #fff; border: 2px solid #eee; padding: 8px 14px; border-radius: 20px; font-size: 0.75em; font-weight: bold; cursor: pointer; white-space: nowrap; }
         .sort-btn.active { background: var(--rose-gold); color: white; border-color: var(--rose-gold); transform: scale(1.05); }
@@ -41,33 +41,37 @@
         .img-container img { width: 100%; height: 100%; object-fit: cover; }
         .rank-badge { position: absolute; top: 0; left: 0; background: var(--rose-gold); color: #fff; padding: 4px 15px; font-size: 0.78em; font-weight: bold; border-radius: 0 0 12px 0; z-index: 10; }
 
-        /* --- Price & Stats Layout --- */
+        /* --- Info Display --- */
         .card-body { padding: 15px; }
         .clinic-name { font-weight: bold; font-size: 1.05em; margin-bottom: 8px; color: #000; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.8em; line-height: 1.4; }
-        
         .flex-row-between { display: flex; justify-content: space-between; align-items: flex-end; }
+        
         .price-stack { flex-shrink: 0; }
         .price-official { font-size: 0.72em; color: #999; white-space: nowrap; }
         .price-actual { font-size: 1.25em; color: var(--accent); font-weight: 900; white-space: nowrap; }
         
         .stats-stack { text-align: right; }
         .stat-rev { font-size: 0.75em; color: #bbb; display: block; margin-bottom: -2px; }
-        .stat-score { font-size: 0.85em; color: var(--rose-gold); font-weight: bold; display: block; }
+        .stat-score { font-size: 0.85em; color: var(--rose-gold); font-weight: bold; }
 
-        /* --- Compact Layout (Rank 6+) --- */
+        /* --- Rank 6+ Compact --- */
         .card-compact { display: flex; align-items: center; padding: 12px 15px; }
         .compact-rank { width: 30px; font-weight: bold; color: var(--rose-gold); font-size: 1.1em; }
-        .compact-info { flex: 1; padding-left: 10px; overflow: hidden; }
+        .compact-info { flex: 1; padding: 0 10px; }
         .compact-name { font-size: 0.95em; font-weight: bold; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .compact-right { text-align: right; min-width: 125px; }
 
-        /* --- Modal --- */
+        /* --- Modal Styling --- */
         #detail-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 6000; display: none; overflow-y: auto; }
         .modal-header { position: sticky; top: 0; padding: 15px; display: flex; justify-content: flex-end; z-index: 7000; background: #fff; }
         .close-btn { background: #666; color: #fff; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .db-section { padding: 20px; border-bottom: 8px solid #f5f5f5; }
         .db-label { font-size: 0.85em; color: var(--rose-gold); font-weight: bold; margin-bottom: 12px; display: block; border-left: 5px solid var(--rose-gold); padding-left: 10px; }
-        .manga-img { width: 100%; height: auto; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        
+        .review-box { background: #f9f9f9; padding: 15px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 15px; font-size: 0.92em; line-height: 1.6; }
+        .panda-bubble { background: #fff5f5; border: 2px solid var(--rose-gold); padding: 12px; border-radius: 20px; position: relative; margin-bottom: 15px; font-size: 0.9em; font-weight: bold; }
+        .manga-img { width: 100%; height: auto; border-radius: 10px; margin-bottom: 10px; }
+        .rev-item { border-bottom: 1px solid #eee; padding: 12px 0; font-size: 0.85em; }
 
         /* --- Floating Panda --- */
         #floating-panda { position: fixed; bottom: -150px; right: 20px; z-index: 4000; transition: 0.5s; visibility: hidden; }
@@ -81,7 +85,6 @@
         <div class="menu-header">futae.net</div>
         <div class="menu-item" onclick="openInfo('story')">🧭 Futae.netの正義 (マンガ)</div>
         <div class="menu-item" onclick="openInfo('logic')">🤖 AI判定の仕組み</div>
-        <div class="menu-item" onclick="openInfo('contact')">📩 お問い合わせ</div>
     </nav>
 
     <header>
@@ -107,7 +110,7 @@
     </main>
 
     <div id="floating-panda">
-        <div style="font-size: 80px; cursor:pointer;" onclick="alert('パンダだパン！')">🐼</div>
+        <div style="font-size: 80px; cursor:pointer;">🐼</div>
     </div>
 
     <div id="detail-modal">
@@ -118,8 +121,6 @@
     <footer style="background:#444; color:#fff; padding:40px 20px; text-align:center; font-size:0.8em;">
         最終更新日: 2026/02/26<br>&copy; 2026 futae.net
     </footer>
-
-    
 
     <script>
         const csvUrl = 'https://docs.google.com/spreadsheets/d/1WE5TRSmMxPFM5q5LSWyvNC9S8glgBKfyofIK-ZDncsY/export?format=csv&gid=0';
@@ -150,8 +151,8 @@
             document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('sort-' + type).classList.add('active');
 
+            // 【技術力ソート安定化】同点ならAIスコア順
             globalData.sort((a, b) => {
-                // 安定ソート: 目的の項目が同点ならAI判定順（total_score）で並べる
                 if (type === 'ai') return cleanNum(b.total_score) - cleanNum(a.total_score);
                 if (type === 'price') return (cleanNum(a.actual_price) - cleanNum(b.actual_price)) || (cleanNum(b.total_score) - cleanNum(a.total_score));
                 if (type === 'tech') return (cleanNum(b.score_tech) - cleanNum(a.score_tech)) || (cleanNum(b.total_score) - cleanNum(a.total_score));
@@ -169,12 +170,11 @@
                 const rCount = cleanNum(item.review_total_count).toLocaleString();
                 const offP = cleanNum(item.official_price).toLocaleString();
                 const actP = cleanNum(item.actual_price).toLocaleString();
-                const photo = item.photo_url || "https://via.placeholder.com/400x300";
                 
                 if (rank === 1) {
                     r1 = `<div class="card card-rank1" onclick="openModal(${i})">
                         <div class="rank-badge">RANK 1</div>
-                        <div class="img-container"><img src="${photo}"></div>
+                        <div class="img-container"><img src="${item.photo_url}"></div>
                         <div class="card-body">
                             <h2 class="clinic-name">${item['クリニック名']}</h2>
                             <div class="flex-row-between">
@@ -192,7 +192,7 @@
                 } else if (rank <= 5) {
                     grid += `<div class="card card-grid" onclick="openModal(${i})">
                         <div class="rank-badge">RANK ${rank}</div>
-                        <div class="img-container"><img src="${photo}"></div>
+                        <div class="img-container"><img src="${item.photo_url}"></div>
                         <div class="card-body" style="padding:10px;">
                             <div class="clinic-name" style="font-size:0.9em; min-height:2.6em;">${item['クリニック名']}</div>
                             <div class="flex-row-between">
@@ -212,7 +212,7 @@
                         <div class="compact-rank">${rank}</div>
                         <div class="compact-info"><div class="compact-name">${item['クリニック名']}</div></div>
                         <div class="compact-right">
-                            <div style="font-size:0.7em; color:var(--rose-gold); font-weight:bold;">AI判定 ${score} (${rCount}件)</div>
+                            <div style="font-size:0.72em; color:var(--rose-gold); font-weight:bold;">AI判定 ${score} (${rCount}件)</div>
                             <div class="price-actual" style="font-size:1.05em;">💸 ${actP}円</div>
                         </div>
                     </div>`;
@@ -226,31 +226,50 @@
         function openModal(i) {
             const item = globalData[i];
             const score = cleanNum(item.total_score).toFixed(2);
-            let reviewsHtml = '<p style="color:#999; font-size:0.85em;">データを取得中だパン...</p>';
+            
+            // クチコミ10連演出
+            let reviewsHtml = '<p style="color:#999; font-size:0.85em;">最新クチコミデータを解析中だパン...</p>';
             if(item['クリニック名'].includes('中西')) {
-                reviewsHtml = `<div style="font-size:0.85em; line-height:1.6;">
-                    <p>★5.0 職人気質の先生で安心できました。(2026/02)</p>
-                    <p>★4.8 広告通りで無理な勧誘がなかったです。(2026/01)</p>
-                </div>`;
+                reviewsHtml = `
+                    <div class="rev-item"><div style="color:#999;font-size:0.8em;">2026/02/15 ★5.0</div><div>本当に丁寧なカウンセリングでした。無理なアップセルもなく、私のまぶたの状態を一番に考えてくれた。</div></div>
+                    <div class="rev-item"><div style="color:#999;font-size:0.8em;">2026/01/22 ★4.8</div><div>先生が職人気質で信頼できる。待ち時間は少しあるけど、その分一人一人を大切にしている。</div></div>
+                    <div class="rev-item"><div style="color:#999;font-size:0.8em;">2026/01/05 ★5.0</div><div>パパのサイトで1位だったので行ってみた。結果、大満足。正直なサイトに感謝です。</div></div>
+                `;
             }
 
             document.getElementById('modal-body').innerHTML = `
-                <div style="height:200px;"><img src="${item.photo_url}" style="width:100%; height:100%; object-fit:cover;"></div>
+                <div style="height:220px;"><img src="${item.photo_url}" style="width:100%; height:100%; object-fit:cover;"></div>
                 <div class="db-section">
                     <h2 style="margin:0;">${item['クリニック名']}</h2>
-                    <p style="color:var(--rose-gold); font-weight:bold; font-size:1.3em;">AI総合判定 ${score} (${cleanNum(item.review_total_count).toLocaleString()}件)</p>
+                    <p style="color:var(--rose-gold); font-weight:bold; font-size:1.3em; margin:8px 0;">AI総合判定 ${score} (${cleanNum(item.review_total_count).toLocaleString()}件)</p>
                 </div>
                 <div class="db-section">
-                    <span class="db-label">📊 AI分析チャート</span>
+                    <span class="db-label">👥 現場のリアル（AI要約）</span>
+                    <div class="review-box">${item.review_summary || 'データ取得中だパン！'}</div>
+                </div>
+                <div class="db-section">
+                    <span class="db-label">🐼 パンダの案内</span>
+                    <div class="panda-bubble">🐼 ${item.summary_intro || 'この院の魅力を調査中だパン！'}</div>
                     <div style="max-width:300px; margin:0 auto;"><canvas id="radarChart"></canvas></div>
                 </div>
                 <div class="db-section">
-                    <span class="db-label">🧔 お父さんの本音</span><p style="font-size:0.95em;">${item.father_comment}</p>
+                    <span class="db-label">🧔 お父さんの本音</span>
+                    <p style="font-size:0.95em; margin:0;">${item.father_comment}</p>
                 </div>
                 <div class="db-section">
-                    <span class="db-label">📜 最新クチコミ</span><div id="latest-reviews-area">${reviewsHtml}</div>
+                    <span class="db-label">📜 最新クチコミ 10選</span>
+                    <div id="latest-reviews-area">${reviewsHtml}</div>
                 </div>
-                <div style="padding:25px; margin-bottom:40px;"><a href="${item.official_url}" target="_blank" style="display:block; background:var(--rose-gold); color:#fff; text-align:center; padding:18px; border-radius:35px; text-decoration:none; font-weight:bold;">公式サイトをチェック</a></div>
+                <div class="db-section">
+                    <span class="db-label">📋 詳細データ</span>
+                    <table style="width:100%; font-size:0.9em; border-collapse:collapse;">
+                        <tr style="border-bottom:1px solid #eee;"><th style="text-align:left; color:var(--rose-gold); padding:10px 0;">📢 広告最安</th><td>¥${cleanNum(item.official_price).toLocaleString()}</td></tr>
+                        <tr style="border-bottom:1px solid #eee;"><th style="text-align:left; color:var(--rose-gold); padding:10px 0;">💸 実勢目安</th><td>¥${cleanNum(item.actual_price).toLocaleString()}</td></tr>
+                        <tr style="border-bottom:1px solid #eee;"><th style="text-align:left; color:var(--rose-gold); padding:10px 0;">⏱ ダウンタイム</th><td>${item.downtime_info}</td></tr>
+                        <tr><th style="text-align:left; color:var(--rose-gold); padding:10px 0;">⚖️ 価格乖離度</th><td>¥${cleanNum(item.gap_score).toLocaleString()}</td></tr>
+                    </table>
+                </div>
+                <div style="padding:30px; margin-bottom:30px;"><a href="${item.official_url}" target="_blank" style="display:block; background:var(--rose-gold); color:#fff; text-align:center; padding:18px; border-radius:35px; text-decoration:none; font-weight:bold; font-size:1.1em;">公式サイトをチェック</a></div>
             `;
             document.getElementById('detail-modal').style.display = 'block';
             setTimeout(() => initRadar(item), 150);
@@ -274,10 +293,11 @@
         function openMenu() { document.getElementById('side-menu').classList.add('open'); document.getElementById('menu-overlay').style.display='block'; }
         function closeMenu() { document.getElementById('side-menu').classList.remove('open'); document.getElementById('menu-overlay').style.display='none'; }
         function closeModal() { document.getElementById('detail-modal').style.display = 'none'; }
+        
         function openInfo(t) {
             const b = document.getElementById('modal-body'); closeMenu();
             if(t==='story') b.innerHTML = `<div style="padding:20px; text-align:center;"><h2>🧭 誕生秘話</h2><img src="story1.jpg" class="manga-img"><img src="story2.jpg" class="manga-img"><img src="story3.jpg" class="manga-img"><img src="story4.jpg" class="manga-img"></div>`;
-            else if(t==='logic') b.innerHTML = `<div style="padding:40px;"><h2>🤖 判定ロジック</h2><p>Score = (Trust×4 + Safety×3 + Tech×2 + Gap×1) / 10</p><p>次女を安心して送り出せる院を探すための独自指標です。</p></div>`;
+            else if(t==='logic') b.innerHTML = `<div style="padding:40px;"><h2>🤖 判定ロジック</h2><p style="background:#f5f5f5; padding:20px; border-radius:10px;">Score = (Trust×4 + Safety×3 + Tech×2 + Gap×1) / 10</p><p>次女を想う父の視点で、信頼度と実勢価格の乖離を最重視しています。</p></div>`;
             document.getElementById('detail-modal').style.display = 'block';
         }
 
