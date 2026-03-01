@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>futae.net | 新宿二重整形AI診断 V24.3</title>
+    <title>futae.net | 新宿二重整形AI診断 V24.4</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
@@ -11,11 +11,12 @@
         :root { --rose-gold: #C19281; --bg: #f8f9fa; --accent: #d63031; --gold: #d4af37; --pink-bg: #fff5f5; }
         body { font-family: "Noto Sans JP", sans-serif; background: var(--bg); margin: 0; padding: 0; line-height: 1.5; color: #333; overflow-x: hidden; }
         
+        /* --- Header --- */
         header { background: #fff; height: 90px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid #eee; }
         .header-logo { height: 50px; cursor: pointer; }
         .menu-trigger { font-size: 32px; cursor: pointer; color: var(--rose-gold); width: 65px; }
-        .header-panda { font-size: 28px; cursor: pointer; }
 
+        /* --- Sidebar --- */
         #side-menu { position: fixed; top: 0; left: -300px; width: 300px; height: 100%; background: white; z-index: 5000; transition: 0.4s; box-shadow: 5px 0 15px rgba(0,0,0,0.1); overflow-y: auto; }
         #side-menu.open { left: 0; }
         #menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 4500; display: none; }
@@ -23,36 +24,46 @@
         .menu-item { padding: 18px 20px; border-bottom: 1px solid #eee; font-weight: bold; cursor: pointer; font-size: 0.95em; }
         .menu-sub-title { background: #f9f9f9; padding: 10px 20px; font-size: 0.75em; color: #999; font-weight: bold; }
 
+        /* --- Sort Bar --- */
         .sort-container { background: #fff; padding: 10px 5px; display: flex; gap: 8px; overflow-x: auto; position: sticky; top: 90px; z-index: 900; border-bottom: 1px solid #eee; }
         .sort-btn { flex: 0 0 auto; background: #fff; border: 2px solid #eee; padding: 8px 14px; border-radius: 20px; font-size: 0.75em; font-weight: bold; cursor: pointer; white-space: nowrap; }
         .sort-btn.active { background: var(--rose-gold); color: white; border-color: var(--rose-gold); }
 
+        /* --- Cards --- */
         main { padding: 10px; max-width: 500px; margin: 0 auto; }
         .card { background: #fff; border-radius: 12px; margin-bottom: 15px; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden; cursor: pointer; border: 1px solid #eee; }
         .card-rank1 { border: 3px solid var(--gold); }
-        .card-rank10 { border: 2px solid var(--rose-gold); }
+        .card-rank10 { border: 1.5px solid var(--rose-gold); }
         .rank-grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         
         .img-container { height: 180px; background: #eee; overflow: hidden; }
         .card-grid .img-container { height: 120px; }
-        .card-rank10 .img-container { height: 100px; } /* 10位をスリムに */
+        .card-rank10 .img-container { height: 110px; } /* 10位は薄めに設定 */
         .img-container img { width: 100%; height: 100%; object-fit: cover; }
         
         .rank-badge { position: absolute; top: 0; left: 0; background: var(--rose-gold); color: #fff; padding: 4px 15px; font-size: 0.78em; font-weight: bold; border-radius: 0 0 12px 0; z-index: 10; }
         .badge-gold { background: var(--gold); }
 
+        /* --- Info Stack (New Balanced Layout) --- */
         .card-body { padding: 12px; }
         .clinic-name { font-weight: bold; font-size: 1.05em; margin-bottom: 8px; color: #000; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.8em; line-height: 1.4; }
-        .price-official { font-size: 0.7em; color: #999; }
-        .price-actual { font-size: 1.2em; color: var(--accent); font-weight: 900; }
-        .stat-score { font-size: 0.85em; color: var(--rose-gold); font-weight: bold; }
+        .info-row { display: flex; justify-content: space-between; align-items: flex-end; }
+        .price-col { flex: 1; }
+        .stats-col { text-align: right; flex-shrink: 0; }
+        
+        .price-official { font-size: 0.68em; color: #999; margin-bottom: 1px; }
+        .price-actual { font-size: 1.22em; color: var(--accent); font-weight: 900; }
+        .stat-rev { font-size: 0.65em; color: #999; display: block; margin-bottom: 1px; }
+        .stat-score { font-size: 1.05em; color: var(--rose-gold); font-weight: bold; }
 
-        .card-compact { display: flex; align-items: center; padding: 12px 15px; }
-        .compact-rank { width: 25px; font-weight: bold; color: var(--rose-gold); font-size: 1em; }
-        .compact-info { flex: 1; padding: 0 10px; }
-        .compact-name { font-size: 0.9em; font-weight: bold; }
+        /* --- Compact Layout --- */
+        .card-compact { display: flex; align-items: center; padding: 10px 15px; }
+        .compact-rank { width: 25px; font-weight: bold; color: var(--rose-gold); font-size: 0.95em; }
+        .compact-info { flex: 1; padding: 0 8px; overflow: hidden; }
+        .compact-name { font-size: 0.88em; font-weight: bold; }
+        .compact-right { text-align: right; min-width: 110px; }
 
-        /* Contact Form */
+        /* --- Contact Form --- */
         #contact-section { background: #fff; padding: 30px 20px; margin-top: 40px; border-top: 5px solid var(--rose-gold); }
         .form-title { text-align: center; color: var(--rose-gold); font-weight: bold; margin-bottom: 20px; }
         .form-group { margin-bottom: 15px; }
@@ -60,10 +71,10 @@
         .form-control { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1em; box-sizing: border-box; }
         .btn-submit { width: 100%; background: var(--rose-gold); color: white; border: none; padding: 15px; border-radius: 30px; font-weight: bold; font-size: 1.1em; cursor: pointer; margin-top: 10px; }
 
-        /* Manga Modal Fix */
-        .manga-container { max-width: 100%; margin: 0 auto; text-align: center; }
-        .manga-img { max-width: 100%; height: auto; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .father-msg-box { background: var(--pink-bg); padding: 25px; border-radius: 15px; border: 2px dashed var(--rose-gold); text-align: left; font-size: 0.92em; line-height: 1.8; margin-top: 20px; }
+        /* --- Manga Modal Fix --- */
+        .manga-container { width: 100%; text-align: center; }
+        .manga-img { max-width: 100%; height: auto; border-radius: 10px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto; }
+        .father-msg-box { background: var(--pink-bg); padding: 25px; border-radius: 15px; border: 2px dashed var(--rose-gold); text-align: left; font-size: 0.9em; line-height: 1.8; margin-top: 20px; }
 
         #detail-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 6000; display: none; overflow-y: auto; }
         .modal-header { position: sticky; top: 0; padding: 15px; display: flex; justify-content: flex-end; z-index: 7000; background: #fff; }
@@ -140,7 +151,7 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>メッセージ</label>
+                <label>メッセージ内容</label>
                 <textarea class="form-control" rows="5" placeholder="自由に入力してパン"></textarea>
             </div>
             <button type="button" class="btn-submit" onclick="alert('問い合わせを届けるパン！🐼（送信機能は準備中）')">問い合わせを届けるパン 🐼</button>
@@ -265,13 +276,13 @@
                     <div class="img-container"><img src="${item.photo_url || ''}"></div>
                     <div class="card-body">
                         <h2 class="clinic-name" style="${rank===10 ? 'min-height:auto;' : ''}">${item['クリニック名']}</h2>
-                        <div class="flex-row-between" style="display:flex; justify-content:space-between; align-items:flex-end;">
-                            <div>
+                        <div class="info-row">
+                            <div class="price-col">
                                 <div class="price-official">📢 広告最安: ${offP}円</div>
                                 <div class="price-actual">💸 実勢目安: ${actP}円</div>
                             </div>
-                            <div style="text-align:right;">
-                                <span class="stat-rev">${rCount}件</span>
+                            <div class="stats-col">
+                                <span class="stat-rev">${rCount}件のクチコミ</span>
                                 <span class="stat-score">AI判定 ${score}</span>
                             </div>
                         </div>
@@ -283,8 +294,15 @@
                     <div class="img-container"><img src="${item.photo_url || ''}"></div>
                     <div class="card-body">
                         <div class="clinic-name" style="font-size:0.88em; min-height:2.6em;">${item['クリニック名']}</div>
-                        <div class="price-actual" style="font-size:1em;">💸 ${actP}円</div>
-                        <div class="stat-score" style="font-size:0.7em;">AI判定 ${score}</div>
+                        <div class="info-row">
+                            <div class="price-col">
+                                <div class="price-actual" style="font-size:1em;">💸 ${actP}円</div>
+                            </div>
+                            <div class="stats-col">
+                                <span class="stat-rev" style="font-size:0.55em;">${rCount}件</span>
+                                <span class="stat-score" style="font-size:0.75em;">AI ${score}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>`;
             } else {
@@ -292,7 +310,9 @@
                     <div class="compact-rank">${rank}</div>
                     <div class="compact-info"><div class="compact-name">${item['クリニック名']}</div></div>
                     <div class="compact-right">
+                        <div class="stat-rev" style="font-size:0.6em;">${rCount}件</div>
                         <div class="price-actual" style="font-size:0.95em;">💸 ${actP}円</div>
+                        <div class="stat-score" style="font-size:0.7em;">AI ${score}</div>
                     </div>
                 </div>`;
             }
@@ -364,7 +384,7 @@
             if(t==='story') {
                 b.innerHTML = `
                 <div class="manga-container" style="padding:20px;">
-                    <h2>🧭 Futae.netの正義</h2>
+                    <h2 style="color:var(--rose-gold);">🧭 Futae.netの正義</h2>
                     <img src="story1.jpg" class="manga-img">
                     <img src="story2.jpg" class="manga-img">
                     <img src="story3.jpg" class="manga-img">
@@ -380,9 +400,9 @@
             } else if(t==='logic') {
                 b.innerHTML = `
                 <div style="padding:40px;">
-                    <h2>🤖 AI判定の仕組み</h2>
+                    <h2 style="color:var(--rose-gold);">🤖 AI判定の仕組み</h2>
                     <div style="background:#f5f5f5; padding:20px; border-radius:10px; font-family:serif; text-align:center; margin-bottom:20px;">
-                        $$Score = \frac{(Trust \times 4 + Safety \times 3 + Tech \times 2 + Cost \times 1)}{10}$$
+                        Score = (Trust×4 + Safety×3 + Tech×2 + Cost×1) / 10
                     </div>
                     <p style="font-weight:bold; color:var(--rose-gold);">価格の透明性と技術力を最優先に評価しているパン！</p>
                     <p style="font-size:0.9em; line-height:1.7;">形成外科専門医、修正手術対応などの実績、広告価格と実勢価格のギャップ、Googleマップクチコミや美容系サイト、某SNSのリアルなユーザー評判など1万件以上のデータを独自のアルゴリズムで算定しAIが出した数値だパン。</p>
