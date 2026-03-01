@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>futae.net | 新宿二重整形AI診断 V24.1</title>
+    <title>futae.net | 新宿二重整形AI診断 V24.2</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
@@ -30,35 +30,38 @@
         .sort-btn { flex: 0 0 auto; background: #fff; border: 2px solid #eee; padding: 8px 14px; border-radius: 20px; font-size: 0.75em; font-weight: bold; cursor: pointer; white-space: nowrap; }
         .sort-btn.active { background: var(--rose-gold); color: white; border-color: var(--rose-gold); transform: scale(1.05); }
 
-        /* --- Cards --- */
+        /* --- Layout Structures --- */
         main { padding: 10px; max-width: 500px; margin: 0 auto; }
         .card { background: #fff; border-radius: 12px; margin-bottom: 15px; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden; cursor: pointer; border: 1px solid #eee; }
         .card-rank1 { border: 3px solid var(--gold); }
+        .card-rank10 { border: 2px solid var(--rose-gold); margin-top: 10px; }
+        
         .rank-grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        
         .img-container { height: 180px; background: #eee; }
         .card-grid .img-container { height: 130px; }
         .img-container img { width: 100%; height: 100%; object-fit: cover; }
+        
         .rank-badge { position: absolute; top: 0; left: 0; background: var(--rose-gold); color: #fff; padding: 4px 15px; font-size: 0.78em; font-weight: bold; border-radius: 0 0 12px 0; z-index: 10; }
+        .badge-gold { background: var(--gold); }
 
         /* --- Info Display --- */
         .card-body { padding: 15px; }
         .clinic-name { font-weight: bold; font-size: 1.05em; margin-bottom: 8px; color: #000; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.8em; line-height: 1.4; }
         .flex-row-between { display: flex; justify-content: space-between; align-items: flex-end; }
-        .price-stack { flex-shrink: 0; }
         .price-official { font-size: 0.72em; color: #999; white-space: nowrap; }
         .price-actual { font-size: 1.25em; color: var(--accent); font-weight: 900; white-space: nowrap; }
-        .stats-stack { text-align: right; }
         .stat-rev { font-size: 0.75em; color: #bbb; display: block; margin-bottom: -2px; }
         .stat-score { font-size: 0.85em; color: var(--rose-gold); font-weight: bold; }
 
-        /* --- Compact Layout --- */
+        /* --- Compact Layout (Rank 11+) --- */
         .card-compact { display: flex; align-items: center; padding: 12px 15px; }
         .compact-rank { width: 30px; font-weight: bold; color: var(--rose-gold); font-size: 1.1em; }
         .compact-info { flex: 1; padding: 0 10px; overflow: hidden; }
         .compact-name { font-size: 0.95em; font-weight: bold; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .compact-right { text-align: right; min-width: 125px; }
 
-        /* --- Modal Styling --- */
+        /* --- Modal --- */
         #detail-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 6000; display: none; overflow-y: auto; }
         .modal-header { position: sticky; top: 0; padding: 15px; display: flex; justify-content: flex-end; z-index: 7000; background: #fff; }
         .close-btn { background: #666; color: #fff; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
@@ -66,9 +69,8 @@
         .db-label { font-size: 0.85em; color: var(--rose-gold); font-weight: bold; margin-bottom: 12px; display: block; border-left: 5px solid var(--rose-gold); padding-left: 10px; }
         .review-box { background: #f9f9f9; padding: 15px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 15px; font-size: 0.92em; line-height: 1.6; }
         .panda-bubble-modal { background: #fff5f5; border: 2px solid var(--rose-gold); padding: 12px; border-radius: 20px; position: relative; margin-bottom: 20px; font-size: 0.9em; font-weight: bold; }
-        .manga-img { width: 100%; height: auto; border-radius: 10px; margin-bottom: 10px; }
 
-        /* --- Floating Panda (AI Concierge) --- */
+        /* --- Floating Panda --- */
         #floating-panda { position: fixed; bottom: -150px; right: 20px; z-index: 4000; transition: 0.5s; visibility: hidden; }
         #floating-panda.show { bottom: 20px; visibility: visible; }
         .wisdom-bubble { position: absolute; bottom: 100px; right: 0; width: 240px; background: #fff; border: 3px solid var(--rose-gold); padding: 15px; border-radius: 20px; font-size: 0.85em; font-weight: bold; box-shadow: 0 8px 25px rgba(0,0,0,0.15); display: none; z-index: 4001; line-height: 1.6; }
@@ -111,6 +113,7 @@
         </div>
         <div id="rank-1-area"></div>
         <div id="rank-grid-area" class="rank-grid-container"></div>
+        <div id="rank-10-area"></div>
         <div id="rank-list-area"></div>
     </main>
 
@@ -133,12 +136,7 @@
 
     <script>
         const spreadsheetId = '1WE5TRSmMxPFM5q5LSWyvNC9S8glgBKfyofIK-ZDncsY';
-        
-        // 1. クリニックデータ用URL（シート1）
         const clinicCsvUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv&gid=0`;
-        
-        // 2. パンダの知恵（panda_wisdom）用URL
-        // 本部長から提供された「ウェブに公開」CSVリンクを使用
         const wisdomCsvUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vQmTgCOB0gT-HGoZEIvTHCJyZsLd_t7thkzzhK1-ocKZQ-mhVCW96Qw_9nuQvQaxl_qrf0A2tRDbeIG/pub?gid=139261368&single=true&output=csv`; 
 
         let globalData = [];
@@ -178,10 +176,7 @@
                     header: true, skipEmptyLines: true,
                     complete: function(r) {
                         wisdomData = r.data;
-                        console.log("Wisdom Data Loaded:", wisdomData.length);
-                        setTimeout(() => {
-                            document.getElementById('floating-panda').classList.add('show');
-                        }, 1200);
+                        setTimeout(() => { document.getElementById('floating-panda').classList.add('show'); }, 1200);
                     }
                 });
             } catch (e) { console.error(e); }
@@ -189,28 +184,35 @@
 
         function speakWisdom() {
             if (wisdomData.length === 0) return;
-            const bubble = document.getElementById('wisdom-bubble');
-            const textEl = document.getElementById('wisdom-text');
-            const catEl = document.getElementById('wisdom-cat');
-            
-            // Priority（優先度）に基づく重み付け抽選
+            const selected = weightedRandom(wisdomData);
+            showPandaBubble(selected.Category || "Panda Wisdom", selected.Answer);
+        }
+
+        function weightedRandom(items) {
             let pool = [];
-            wisdomData.forEach(item => {
+            items.forEach(item => {
                 const p = parseInt(item.Priority) || 1;
                 for (let i = 0; i < p; i++) pool.push(item);
             });
-            
-            const selected = pool[Math.floor(Math.random() * pool.length)];
-            catEl.innerText = selected.Category || "Panda Wisdom";
-            textEl.innerText = selected.Answer;
+            return pool[Math.floor(Math.random() * pool.length)];
+        }
+
+        function showPandaBubble(cat, msg) {
+            const bubble = document.getElementById('wisdom-bubble');
+            document.getElementById('wisdom-cat').innerText = cat;
+            document.getElementById('wisdom-text').innerText = msg;
             bubble.classList.add('active');
-            
             setTimeout(() => { bubble.classList.remove('active'); }, 8000);
         }
 
         function sort(type) {
             document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('sort-' + type).classList.add('active');
+            
+            if (type === 'review') {
+                showPandaBubble("⚠️ パンダの警告", "クチコミ数が多いのは、広告費をたくさん使っている証拠でもあるパン。数は安心の目安にはなるけど、それが『腕の良さ』とは限らないパン。惑わされるなパン！");
+            }
+
             globalData.sort((a, b) => {
                 if (type === 'ai') return cleanNum(b.total_score) - cleanNum(a.total_score);
                 if (type === 'price') return (cleanNum(a.actual_price) - cleanNum(b.actual_price)) || (cleanNum(b.total_score) - cleanNum(a.total_score));
@@ -221,75 +223,86 @@
             render();
         }
 
-        function render() {
-            let r1 = '', grid = '', list = '';
-            globalData.forEach((item, i) => {
-                const rank = i + 1;
-                const score = cleanNum(item.total_score).toFixed(2);
-                const rCount = cleanNum(item.review_total_count).toLocaleString();
-                const offP = cleanNum(item.official_price).toLocaleString();
-                const actP = cleanNum(item.actual_price).toLocaleString();
-                
-                if (rank === 1) {
-                    r1 = `<div class="card card-rank1" onclick="openModal(${i})">
-                        <div class="rank-badge">RANK 1</div>
-                        <div class="img-container"><img src="${item.photo_url || ''}"></div>
-                        <div class="card-body">
-                            <h2 class="clinic-name">${item['クリニック名']}</h2>
-                            <div class="flex-row-between">
-                                <div class="price-stack">
-                                    <div class="price-official">📢 広告最安: ${offP}円</div>
-                                    <div class="price-actual">💸 実勢目安: ${actP}円</div>
-                                </div>
-                                <div class="stats-stack">
-                                    <span class="stat-rev">${rCount}件</span>
-                                    <span class="stat-score">AI判定 ${score}</span>
-                                </div>
+        function createCardHtml(item, rank, type) {
+            const score = cleanNum(item.total_score).toFixed(2);
+            const rCount = cleanNum(item.review_total_count).toLocaleString();
+            const actP = cleanNum(item.actual_price).toLocaleString();
+            const offP = cleanNum(item.official_price).toLocaleString();
+            const photo = item.photo_url || "";
+            
+            if (type === 'full') {
+                const badgeClass = rank === 1 ? 'badge-gold' : '';
+                const cardClass = rank === 1 ? 'card-rank1' : 'card-rank10';
+                return `<div class="card ${cardClass}" onclick="openModalByData('${item['クリニック名']}')">
+                    <div class="rank-badge ${badgeClass}">RANK ${rank}</div>
+                    <div class="img-container"><img src="${photo}"></div>
+                    <div class="card-body">
+                        <h2 class="clinic-name">${item['クリニック名']}</h2>
+                        <div class="flex-row-between">
+                            <div class="price-stack">
+                                <div class="price-official">📢 広告最安: ${offP}円</div>
+                                <div class="price-actual">💸 実勢目安: ${actP}円</div>
+                            </div>
+                            <div class="stats-stack" style="text-align:right;">
+                                <span class="stat-rev">${rCount}件</span>
+                                <span class="stat-score">AI判定 ${score}</span>
                             </div>
                         </div>
-                    </div>`;
-                } else if (rank <= 5) {
-                    grid += `<div class="card card-grid" onclick="openModal(${i})">
-                        <div class="rank-badge">RANK ${rank}</div>
-                        <div class="img-container"><img src="${item.photo_url || ''}"></div>
-                        <div class="card-body" style="padding:10px;">
-                            <div class="clinic-name" style="font-size:0.9em; min-height:2.6em;">${item['クリニック名']}</div>
-                            <div class="flex-row-between">
-                                <div class="price-stack">
-                                    <div class="price-official" style="font-size:0.65em;">📢 ${offP}円</div>
-                                    <div class="price-actual" style="font-size:0.95em;">💸 ${actP}円</div>
-                                </div>
-                                <div class="stats-stack">
-                                    <span class="stat-rev" style="font-size:0.65em;">${rCount}件</span>
-                                    <span class="stat-score" style="font-size:0.65em;">${score}</span>
-                                </div>
+                    </div>
+                </div>`;
+            } else if (type === 'grid') {
+                return `<div class="card card-grid" onclick="openModalByData('${item['クリニック名']}')">
+                    <div class="rank-badge">RANK ${rank}</div>
+                    <div class="img-container"><img src="${photo}"></div>
+                    <div class="card-body" style="padding:10px;">
+                        <div class="clinic-name" style="font-size:0.88em; min-height:2.6em;">${item['クリニック名']}</div>
+                        <div class="flex-row-between">
+                            <div style="flex-shrink:0;">
+                                <div class="price-official" style="font-size:0.62em;">📢 ${offP}円</div>
+                                <div class="price-actual" style="font-size:0.92em;">💸 ${actP}円</div>
+                            </div>
+                            <div style="text-align:right;">
+                                <span class="stat-rev" style="font-size:0.62em;">${rCount}件</span>
+                                <span class="stat-score" style="font-size:0.7em;">AI ${score}</span>
                             </div>
                         </div>
-                    </div>`;
-                } else {
-                    list += `<div class="card card-compact" onclick="openModal(${i})">
-                        <div class="compact-rank">${rank}</div>
-                        <div class="compact-info"><div class="compact-name">${item['クリニック名']}</div></div>
-                        <div class="compact-right">
-                            <div style="font-size:0.72em; color:var(--rose-gold); font-weight:bold;">AI判定 ${score} (${rCount}件)</div>
-                            <div class="price-actual" style="font-size:1.05em;">💸 ${actP}円</div>
-                        </div>
-                    </div>`;
-                }
-            });
-            document.getElementById('rank-1-area').innerHTML = r1;
-            document.getElementById('rank-grid-area').innerHTML = grid;
-            document.getElementById('rank-list-area').innerHTML = list;
+                    </div>
+                </div>`;
+            } else {
+                return `<div class="card card-compact" onclick="openModalByData('${item['クリニック名']}')">
+                    <div class="compact-rank">${rank}</div>
+                    <div class="compact-info"><div class="compact-name">${item['クリニック名']}</div></div>
+                    <div class="compact-right">
+                        <div style="font-size:0.72em; color:var(--rose-gold); font-weight:bold;">AI判定 ${score} (${rCount}件)</div>
+                        <div class="price-actual" style="font-size:1.05em;">💸 ${actP}円</div>
+                    </div>
+                </div>`;
+            }
         }
 
-        function openModal(i) {
-            const item = globalData[i];
+        function render() {
+            let r1 = '', rGrid = '', r10 = '', rList = '';
+            globalData.forEach((item, i) => {
+                const rank = i + 1;
+                if (rank === 1) r1 = createCardHtml(item, rank, 'full');
+                else if (rank >= 2 && rank <= 9) rGrid += createCardHtml(item, rank, 'grid');
+                else if (rank === 10) r10 = createCardHtml(item, rank, 'full');
+                else rList += createCardHtml(item, rank, 'list');
+            });
+            document.getElementById('rank-1-area').innerHTML = r1;
+            document.getElementById('rank-grid-area').innerHTML = rGrid;
+            document.getElementById('rank-10-area').innerHTML = r10;
+            document.getElementById('rank-list-area').innerHTML = rList;
+        }
+
+        function openModalByData(name) {
+            const item = globalData.find(d => d['クリニック名'] === name);
             const score = cleanNum(item.total_score).toFixed(2);
             document.getElementById('modal-body').innerHTML = `
-                <div style="height:220px;"><img src="${item.photo_url || ''}" style="width:100%; height:100%; object-fit:cover;"></div>
+                <div style="height:220px;"><img src="${item.photo_url}" style="width:100%; height:100%; object-fit:cover;"></div>
                 <div class="db-section">
                     <h2 style="margin:0;">${item['クリニック名']}</h2>
-                    <p style="color:var(--rose-gold); font-weight:bold; font-size:1.3em; margin:8px 0;">AI総合判定 ${score} (${cleanNum(item.review_total_count).toLocaleString()}件)</p>
+                    <p style="color:var(--rose-gold); font-weight:bold; font-size:1.4em; margin:8px 0;">AI総合判定 ${score} (${cleanNum(item.review_total_count).toLocaleString()}件)</p>
                 </div>
                 <div class="db-section">
                     <span class="db-label">👥 現場のリアル（AI要約）</span>
@@ -301,7 +314,7 @@
                 </div>
                 <div class="db-section">
                     <span class="db-label">🧔 お父さんの本音</span>
-                    <p style="font-size:0.95em; margin:0;">🧔 ${item.father_comment}</p>
+                    <p style="font-size:0.95em; margin:0;">🧔 ${item.father_comment || '準備中だパン'}</p>
                 </div>
                 <div class="db-section">
                     <span class="db-label">🐼 パンダの案内</span>
@@ -312,8 +325,7 @@
                     <table style="width:100%; font-size:0.9em; border-collapse:collapse;">
                         <tr style="border-bottom:1px solid #eee;"><th style="text-align:left; color:var(--rose-gold); padding:10px 0;">📢 広告最安</th><td>¥${cleanNum(item.official_price).toLocaleString()}</td></tr>
                         <tr style="border-bottom:1px solid #eee;"><th style="text-align:left; color:var(--rose-gold); padding:10px 0;">💸 実勢目安</th><td>¥${cleanNum(item.actual_price).toLocaleString()}</td></tr>
-                        <tr style="border-bottom:1px solid #eee;"><th style="text-align:left; color:var(--rose-gold); padding:10px 0;">⏱ ダウンタイム</th><td>${item.downtime_info}</td></tr>
-                        <tr><th style="text-align:left; color:var(--rose-gold); padding:10px 0;">⚖️ 価格乖離度</th><td>¥${cleanNum(item.gap_score).toLocaleString()}</td></tr>
+                        <tr style="border-bottom:1px solid #eee;"><th style="text-align:left; color:var(--rose-gold); padding:10px 0;">⚖️ 価格乖離度</th><td>¥${cleanNum(item.gap_score).toLocaleString()}</td></tr>
                     </table>
                 </div>
                 <div style="padding:30px; margin-bottom:30px;"><a href="${item.official_url}" target="_blank" style="display:block; background:var(--rose-gold); color:#fff; text-align:center; padding:18px; border-radius:35px; text-decoration:none; font-weight:bold; font-size:1.1em;">公式サイトをチェック</a></div>
@@ -336,10 +348,7 @@
             });
         }
 
-        function togglePandaShow() { 
-            const p = document.getElementById('floating-panda');
-            p.classList.toggle('show');
-        }
+        function togglePandaShow() { document.getElementById('floating-panda').classList.toggle('show'); }
         function openMenu() { document.getElementById('side-menu').classList.add('open'); document.getElementById('menu-overlay').style.display='block'; }
         function closeMenu() { document.getElementById('side-menu').classList.remove('open'); document.getElementById('menu-overlay').style.display='none'; }
         function closeModal() { document.getElementById('detail-modal').style.display = 'none'; }
@@ -347,7 +356,7 @@
         function openInfo(t) {
             const b = document.getElementById('modal-body'); closeMenu();
             if(t==='story') b.innerHTML = `<div style="padding:20px; text-align:center;"><h2>🧭 誕生秘話</h2><img src="story1.jpg" class="manga-img"><img src="story2.jpg" class="manga-img"><img src="story3.jpg" class="manga-img"><img src="story4.jpg" class="manga-img"></div>`;
-            else if(t==='logic') b.innerHTML = `<div style="padding:40px;"><h2>🤖 判定ロジック</h2><p style="background:#f5f5f5; padding:20px; border-radius:10px;">Score = (Trust×4 + Safety×3 + Tech×2 + Gap×1) / 10</p></div>`;
+            else if(t==='logic') b.innerHTML = `<div style="padding:40px;"><h2>🤖 判定ロジック</h2><p style="background:#f5f5f5; padding:20px; border-radius:10px;">Score = (Trust×4 + Safety×3 + Tech×2 + Cost×1) / 10</p><p>価格の透明性と技術力を最優先に評価しているパン！</p></div>`;
             document.getElementById('detail-modal').style.display = 'block';
         }
 
