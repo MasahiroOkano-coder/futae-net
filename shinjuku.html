@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Shippori+Mincho&display=swap" rel="stylesheet">
     <style>
         :root { --rose-gold: #C19281; --bg: #f8f9fa; --accent: #d63031; --gold: #d4af37; --pink-bg: #fff5f5; }
-        body { font-family: "Noto Sans JP", sans-serif; background: var(--bg); margin: 0; padding: 0; line-height: 1.4; color: #333; overflow-x: hidden; }
+        body { font-family: "Noto Sans JP", sans-serif; background: var(--bg); margin: 0; padding: 0; line-height: 1.5; color: #333; overflow-x: hidden; }
         
         /* --- ヘッダー --- */
         header { background: #fff; height: 100px; display: flex; flex-direction: column; justify-content: center; padding: 0 15px; position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid #eee; }
@@ -29,9 +29,9 @@
         .menu-item { padding: 18px 20px; border-bottom: 1px solid #eee; font-weight: bold; cursor: pointer; font-size: 0.95em; color: #444; }
         .menu-sub-title { background: #f9f9f9; padding: 10px 20px; font-size: 0.75em; color: #999; font-weight: bold; }
 
-        /* --- ソート・メイン --- */
+        /* --- メインコンテンツ --- */
         .sort-container { background: #fff; padding: 10px 5px; display: flex; gap: 8px; overflow-x: auto; position: sticky; top: 100px; z-index: 900; border-bottom: 1px solid #eee; }
-        .sort-btn { flex: 0 0 auto; background: #fff; border: 1px solid #eee; padding: 8px 14px; border-radius: 20px; font-size: 0.75em; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        .sort-btn { flex: 0 0 auto; background: #fff; border: 2px solid #eee; padding: 8px 14px; border-radius: 20px; font-size: 0.75em; font-weight: bold; cursor: pointer; white-space: nowrap; }
         .sort-btn.active { background: var(--rose-gold); color: white; border-color: var(--rose-gold); }
         
         main { padding: 10px; max-width: 550px; margin: 0 auto; }
@@ -45,29 +45,34 @@
         .price-actual { font-size: 1.1em; color: var(--accent); font-weight: 900; }
         .stat-score { font-size: 0.9em; color: var(--rose-gold); font-weight: bold; }
 
-        /* --- モーダル (詳細表示) --- */
+        /* --- モーダル・DBセクション --- */
         #detail-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 6000; display: none; overflow-y: auto; }
         .modal-header { position: sticky; top: 0; padding: 10px; display: flex; justify-content: flex-end; z-index: 7000; background: rgba(255,255,255,0.9); }
         .close-btn { background: #666; color: #fff; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         
         .db-section { padding: 15px 20px; border-bottom: 6px solid #f5f5f5; }
-        .db-section:last-child { border-bottom: none; }
-        .db-label { font-size: 0.8em; color: var(--rose-gold); font-weight: bold; margin-bottom: 8px; display: block; border-left: 4px solid var(--rose-gold); padding-left: 8px; }
-        
+        .db-label { font-size: 0.85em; color: var(--rose-gold); font-weight: bold; margin-bottom: 8px; display: block; border-left: 5px solid var(--rose-gold); padding-left: 10px; }
         .modal-title { font-size: 1.35em; font-weight: bold; margin: 0; }
-        .modal-score-box { background: var(--pink-bg); padding: 12px; border-radius: 8px; text-align: center; margin-top: 10px; }
+        .modal-score-box { background: var(--pink-bg); padding: 12px; border-radius: 8px; text-align: center; margin-top: 8px; }
+        
         .intro-text { font-size: 0.92em; line-height: 1.6; color: #444; }
-        .papa-box { background: #fef9f0; border: 1px solid #fae1b6; padding: 15px; border-radius: 12px; font-size: 0.92em; line-height: 1.7; }
-        .review-box { background: #f9f9f9; padding: 12px; border-radius: 8px; font-size: 0.88em; }
-        .review-item { margin-bottom: 10px; border-bottom: 1px dashed #ddd; padding-bottom: 8px; }
+        .papa-box { background: var(--pink-bg); padding: 20px; border-radius: 15px; border: 2px dashed var(--rose-gold); font-size: 0.92em; line-height: 1.8; }
+        .knowledge-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.85em; }
+        .knowledge-table th { background: var(--rose-gold); color: white; padding: 10px; }
+        .knowledge-table td { border: 1px solid #eee; padding: 10px; }
+        
+        .review-box { background: #f9f9f9; padding: 15px; border-radius: 10px; font-size: 0.88em; }
+        .review-item { margin-bottom: 12px; border-bottom: 1px dashed #ddd; padding-bottom: 8px; line-height: 1.6; }
         .review-item:last-child { border-bottom: none; }
 
         #contact-section { background: #fff; padding: 40px 20px; margin-top: 40px; border-top: 5px solid var(--rose-gold); }
-        .form-control { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; margin-bottom: 10px; }
-        .btn-submit { width: 100%; background: var(--rose-gold); color: white; border: none; padding: 15px; border-radius: 30px; font-weight: bold; cursor: pointer; }
+        .form-control { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; margin-bottom: 10px; font-size: 1em; }
+        .btn-submit { width: 100%; background: var(--rose-gold); color: white; border: none; padding: 15px; border-radius: 30px; font-weight: bold; cursor: pointer; font-size: 1.1em; }
 
         footer { background: #444; color: #fff; padding: 30px 15px; text-align: center; font-size: 0.75em; }
-        .manga-img { max-width: 100%; border-radius: 10px; margin-bottom: 15px; border: 1px solid #eee; }
+        .manga-container { width: 100%; text-align: center; }
+        .manga-img { max-width: 100%; border-radius: 10px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto; }
+        .quote-box { border-left: 4px solid var(--rose-gold); padding-left: 15px; font-style: italic; color: #555; margin: 15px 0; }
     </style>
 </head>
 <body>
@@ -104,7 +109,7 @@
     </div>
 
     <main id="main-content">
-        <div id="loading-msg" style="text-align:center; padding-top:100px;">🐼 真実を分析中だパン...</div>
+        <div id="loading-msg" style="text-align:center; padding-top:100px;">🐼 分析中だパン...</div>
         <div id="rank-1-area"></div>
         <div id="rank-grid-area" class="rank-grid-container"></div>
         <div id="rank-10-area"></div>
@@ -121,10 +126,10 @@
             <select name="type" class="form-control">
                 <option>サイトについて</option>
                 <option>料金の表示について</option>
-                <option>表示順について</option>
+                <option>カウンセリングについて</option>
                 <option>その他</option>
             </select>
-            <textarea name="message" class="form-control" rows="5" placeholder="メッセージ内容を入力してパン 🐼" required></textarea>
+            <textarea name="message" class="form-control" rows="5" placeholder="自由に入力してパン 🐼" required></textarea>
             <button type="submit" class="btn-submit">問い合わせを届けるパン 🐼</button>
         </form>
     </section>
@@ -154,6 +159,8 @@
             await loadClinics();
             await loadWisdom();
             document.getElementById('floating-panda').style.visibility = 'visible';
+            const now = new Date();
+            document.getElementById('header-date').innerText = (now.getMonth() + 1).toString().padStart(2, '0') + '/' + now.getDate().toString().padStart(2, '0') + "更新";
         }
 
         async function loadClinics() {
@@ -254,12 +261,12 @@
                 </div>
 
                 <div class="db-section" style="text-align:center;">
-                    <a href="${item.official_url}" target="_blank" style="display:block; background:var(--rose-gold); color:#fff; padding:18px; border-radius:35px; text-decoration:none; font-weight:bold;">公式サイトをチェック</a>
+                    <a href="${item.official_url}" target="_blank" style="display:block; background:var(--rose-gold); color:#fff; text-align:center; padding:18px; border-radius:35px; text-decoration:none; font-weight:bold;">公式サイトをチェック</a>
                 </div>
 
                 <div class="db-section">
                     <span class="db-label">🧔 パパの本音</span>
-                    <div class="papa-box">🧔 「${item.father_comment || '自分の娘にも勧められるか、という視点で見てるパン。'}」</div>
+                    <div class="papa-box">🧔 「${item.father_comment || ''}」</div>
                 </div>
 
                 <div class="db-section"><div class="intro-text" style="font-weight:bold; color:var(--rose-gold);">${item.review_summary || ''}</div></div>
@@ -267,9 +274,9 @@
                 <div class="db-section">
                     <span class="db-label">👥 現場のリアル</span>
                     <div class="review-box">
-                        <div style="font-weight:bold; color:#2ecc71; margin-bottom:5px;">[良いクチコミ]</div>
+                        <div style="font-weight:bold; color:#2ecc71; margin-bottom:5px;">[良い点]</div>
                         ${formatReviews(item.reviews_good, '#2ecc71')}
-                        <div style="font-weight:bold; color:#e74c3c; margin-top:15px; margin-bottom:5px;">[気になるクチコミ]</div>
+                        <div style="font-weight:bold; color:#e74c3c; margin-top:15px; margin-bottom:5px;">[気になる点]</div>
                         ${formatReviews(item.reviews_bad, '#e74c3c')}
                     </div>
                 </div>
@@ -291,19 +298,31 @@
         function openInfo(t) {
             closeMenu();
             const b = document.getElementById('modal-body');
-            b.innerHTML = ''; // クリア
+            b.innerHTML = '';
             if(t==='story') {
-                b.innerHTML = `<div class="manga-container" style="padding:20px;"><h2 style="color:var(--rose-gold);">🧭 Futae.netの正義</h2><img src="story1.jpg" class="manga-img"><img src="story2.jpg" class="manga-img"><img src="story3.jpg" class="manga-img"><img src="story4.jpg" class="manga-img"><div class="papa-box">父親の思いからAIを味方にして作ったのが、この『Futae.net』です。なけなしのアルバイト代でチャレンジしたい君たちへ、自信をもってオススメします。</div></div>`;
+                b.innerHTML = `<div class="manga-container" style="padding:20px 0;"><h2 style="color:var(--rose-gold);">🧭 Futae.netの正義</h2><img src="story1.jpg" class="manga-img"><img src="story2.jpg" class="manga-img"><img src="story3.jpg" class="manga-img"><img src="story4.jpg" class="manga-img"><div class="papa-box">「次女の二重への思いを大切に、それに向け頑張ったアルバイト代を正しいクリニックで使ってほしい」<br><br>父親のそんな思いからAIを味方にして作ったのが、この <strong>『Futae.net』</strong> です。<br>このサイトの使命は忖度なしの順位をつけること。<br>なけなしのアルバイト代でプチ整形にチャレンジしたいそんな君たちへ、自信をもってオススメします。</div></div>`;
             } else if(t==='money') {
-                b.innerHTML = `<div style="padding:30px 20px;"><h2 style="color:var(--rose-gold);">💰 お金のハナシ</h2><p>美容整形は「自由診療」。クリニックが自由に値段を決められるからこそ、正しい比較が必要です。</p><div class="papa-box">🧔「病気を治すわけじゃないから、全額自己負担。このことをしっかり頭に入れて、バイト代を出す価値があるか選んでほしいパン！」</div></div>`;
+                b.innerHTML = `<div style="padding:40px 20px;"><h2 style="color:var(--rose-gold);">💰 知っておきたい「お金」のハナシ</h2>
+                    <p style="font-weight:bold;">「風邪のときは安いのに、なんで整形は高いの？🤔」</p>
+                    <p style="font-size:0.9em; line-height:1.7;">病院に行ってお会計をするとき、「風邪のときは1,500円くらいだったのに、二重整形はなんでこんなに高いの？同じお医者さんでしょ？」と不思議に思ったことはありませんか？<br>実は、そこには日本の医療の「あるルール」が関係しているんだパン！🐼</p>
+                    <div class="db-label">1. 美容整形は「自由診療（じゆうしんりょう）」</div>
+                    <p style="font-size:0.85em;">美容整形は「病気を治すこと」ではなく、「今よりもっと綺麗になること」が目的。残念ながら、これには国が認めた「公的医療保険」が使えないんだパン。全額自己負担、これを「自由診療」と呼ぶよ。</p>
+                    <div class="db-label">2. クリニックが自由に値段を決められる！</div>
+                    <p style="font-size:0.85em;">自由診療は文字通り「自由」。クリニックが自分たちで「うちはこの金額でやります！」と自由に決めることができるんだパン。<br>・先生の技術料<br>・クリニックの場所代<br>・テレビCMや広告費<br>これらが全部お値段に乗ってくるから、同じ術式でも大きな開きが出るんだね。</p>
+                    <div class="papa-box">🧔<strong>パパからのアドバイス</strong><br>「自由診療」って聞くと難しそうだけど、要はお買い物と同じなんだ。同じ洋服でもブランドによって値段が違うように、美容整形もクリニックによって全然違う。<br>「病気を治すわけじゃないから、全額自己負担」<br>このことをしっかり頭に入れて、なけなしのバイト代を出す価値があるかどうか、このサイトのAI判定を参考にしてじっくり選んでほしいパン！🐼</div></div>`;
             } else if(t==='knowledge') {
-                b.innerHTML = `<div style="padding:30px 20px;"><h2 style="color:var(--rose-gold);">💉 基本知識</h2><p>埋没法（糸で留める）と切開法（切って作る）の違いなど、仕組みを知れば失敗は防げるパン！</p></div>`;
+                b.innerHTML = `<div style="padding:40px 20px;"><h2 style="color:var(--rose-gold);">💉 二重整形の基本知識</h2><p style="font-weight:bold;">仕組みを知れば失敗は防げるパン！🐼</p>
+                    <details open style="margin-bottom:15px;"><summary style="font-weight:bold; cursor:pointer; background:#eee; padding:10px; border-radius:5px;">1. 術式の違い：埋没法 vs 切開法</summary>
+                        <table class="knowledge-table"><tr><th>項目</th><th>埋没法</th><th>切開法</th></tr><tr><td>方法</td><td>細い糸で留める</td><td>切ってラインを作る</td></tr><tr><td>価格目安</td><td>3万〜15万円</td><td>20万〜40万円</td></tr></table></details>
+                    <details style="margin-bottom:15px;"><summary style="font-weight:bold; cursor:pointer; background:#eee; padding:10px; border-radius:5px;">2. 「何点留め」って何？</summary><div style="padding:10px; font-size:0.9em;"><p>1〜2点留め: 標準。まぶたが薄い人向。3〜4点留め: 厚い人向。固定力強。</p></div></details></div>`;
             } else if(t==='counseling') {
-                b.innerHTML = `<div style="padding:30px 20px;"><h2 style="color:var(--rose-gold);">🗣️ カウンセリングのコツ</h2><div class="papa-box">予算を超えた時の断り文句：「親と約束しているので、独断では決められません」これを言えばOKだパン！</div></div>`;
+                b.innerHTML = `<div style="padding:40px 20px;"><h2 style="color:var(--rose-gold);">🗣️ カウンセリングのコツ</h2><p style="font-weight:bold;">お財布を守るためのチェックリストだパン 🐼</p>
+                    <div class="db-label">1. 予算を超えた時の「断り文句」</div><div class="quote-box">「親と約束しているので、独断では決められません」</div>
+                    <div class="db-label">2. 保証内容のチェック</div><p style="font-size:0.9em;">「再手術無料」でも「麻酔代で数万円かかる」ケースが多いパン。そこを確認してパン！</p></div>`;
             } else if(t==='logic') {
-                b.innerHTML = `<div style="padding:30px 20px;"><h2 style="color:var(--rose-gold);">🤖 AI判定の仕組み</h2><div style="background:#eee; padding:20px; border-radius:10px; text-align:center;">Score = (信頼×4 + 安全×3 + 技術×2 + コスパ×1) / 10</div></div>`;
+                b.innerHTML = `<div style="padding:40px 20px;"><h2 style="color:var(--rose-gold);">🤖 AI判定の仕組み</h2><p>Futae.net独自のアルゴリズムによる判定式です。</p><div style="background:#f5f5f5; padding:20px; border-radius:10px; font-weight:bold; text-align:center; margin-bottom:20px;">Score = (Trust×4 + Safety×3 + Tech×2 + Cost×1) / 10</div></div>`;
             }
-            document.getElementById('detail-modal').style.display='block';
+            document.getElementById('detail-modal').style.display = 'block';
         }
 
         function closeModal() { document.getElementById('detail-modal').style.display='none'; }
