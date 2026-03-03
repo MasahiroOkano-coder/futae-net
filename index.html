@@ -33,6 +33,7 @@
         .form-group label { display: block; font-size: 0.8em; font-weight: bold; margin-bottom: 5px; }
         .form-control { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95em; box-sizing: border-box; }
         .btn-submit { width: 100%; background: var(--rose-gold); color: white; border: none; padding: 15px; border-radius: 30px; font-weight: bold; font-size: 1.05em; cursor: pointer; }
+        #thanks-msg { display: none; background: #e6fffa; color: #2c7a7b; padding: 20px; border-radius: 12px; text-align: center; font-weight: bold; margin-bottom: 20px; border: 2px solid #38b2ac; }
         footer { background: #444; color: #fff; padding: 30px 20px; text-align: center; font-size: 0.75em; }
         .footer-links { margin-bottom: 15px; }
         .footer-links a { color: #fff; text-decoration: underline; margin: 0 10px; cursor: pointer; }
@@ -47,6 +48,9 @@
         <span class="hero-panda">🐼</span>
         <p>1万件以上のリアルなクチコミと独自AIが、クリニックの「実勢価格」と「技術力」を暴きます。</p>
     </section>
+
+    <div id="thanks-msg">📮 お問い合わせありがとうございました！<br>内容を確認して、お返事するパン 🐼</div>
+
     <h2 class="section-title">エリアを選択</h2>
     <div class="area-container">
         <a href="shinjuku.html" class="area-card">
@@ -76,7 +80,7 @@
     <section id="contact-section">
         <div class="section-title" style="margin-top:0;">📮 お問い合わせ</div>
         <form action="https://formsubmit.co/info@futae.net" method="POST">
-            <input type="hidden" name="_next" value="https://futae.net/">
+            <input type="hidden" name="_next" value="https://futae.net/#thanks">
             <input type="hidden" name="_subject" value="【futae.net】新しいお問い合わせが届いたパン！">
             <input type="hidden" name="_captcha" value="false">
             <div class="form-group"><label>名前（ニックネーム可）</label><input type="text" name="name" class="form-control" placeholder="パンダ花子" required></div>
@@ -112,6 +116,11 @@
     <script>
         function showPolicy() { document.getElementById('policy-modal').style.display = 'block'; }
         function hidePolicy() { document.getElementById('policy-modal').style.display = 'none'; }
+        // 問い合わせ完了判定
+        if(window.location.hash === "#thanks") {
+            document.getElementById('thanks-msg').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
     </script>
 </body>
 </html>
