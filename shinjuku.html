@@ -3,259 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>futae.net - 新宿クリニック一覧</title>
-    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho&display=swap" rel="stylesheet">
+    <title>futae.net | 新宿二重整形AI診断 V25.2</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Shippori+Mincho&display=swap" rel="stylesheet">
     <style>
-        /* --- 全体の基本設定 --- */
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
-            color: #333;
-            background-color: #fcfcfc;
-        }
+        :root { --rose-gold: #C19281; --bg: #f8f9fa; --accent: #d63031; --gold: #d4af37; --pink-bg: #fff5f5; }
+        body { font-family: "Noto Sans JP", sans-serif; background: var(--bg); margin: 0; padding: 0; line-height: 1.5; color: #333; overflow-x: hidden; }
+        
+        /* ヘッダー周り */
+        header { background: #fff; height: 105px; display: flex; flex-direction: column; justify-content: center; padding: 0 15px; position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid #eee; }
+        .header-main { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+        .header-logo { height: 45px; cursor: pointer; }
+        .menu-trigger { font-size: 32px; cursor: pointer; color: var(--rose-gold); width: 65px; }
+        .header-right { text-align: right; width: 80px; cursor: pointer; }
+        .header-update-mini { font-size: 8px; color: #bbb; margin-bottom: -4px; font-weight: bold; letter-spacing: -0.5px; }
+        .header-panda { font-size: 32px; }
+        
+        /* ご要望の「新宿クリニック一覧」 */
+        .area-subtitle { text-align: right; font-family: 'Shippori Mincho', serif; font-size: 11px; color: #999; margin-top: 2px; letter-spacing: 0.05em; }
 
-        /* --- ヘッダー --- */
-        header {
-            background-color: #fff;
-            padding: 10px 15px 5px 15px;
-            border-bottom: 1px solid #eee;
-        }
+        #side-menu { position: fixed; top: 0; left: -300px; width: 300px; height: 100%; background: white; z-index: 5000; transition: 0.4s; box-shadow: 5px 0 15px rgba(0,0,0,0.1); overflow-y: auto; }
+        #side-menu.open { left: 0; }
+        #menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 4500; display: none; }
+        .menu-header { padding: 40px 20px; background: var(--rose-gold); color: white; text-align: center; font-weight: bold; font-size: 1.4em; }
+        .menu-item { padding: 18px 20px; border-bottom: 1px solid #eee; font-weight: bold; cursor: pointer; font-size: 0.95em; color: #444; }
+        .menu-sub-title { background: #f9f9f9; padding: 10px 20px; font-size: 0.75em; color: #999; font-weight: bold; }
+        
+        .sort-container { background: #fff; padding: 10px 5px; display: flex; gap: 8px; overflow-x: auto; position: sticky; top: 105px; z-index: 900; border-bottom: 1px solid #eee; }
+        .sort-btn { flex: 0 0 auto; background: #fff; border: 2px solid #eee; padding: 8px 14px; border-radius: 20px; font-size: 0.75em; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        .sort-btn.active { background: var(--rose-gold); color: white; border-color: var(--rose-gold); }
+        
+        /* メイン幅を500→550に微増して余裕を持たせる */
+        main { padding: 10px; max-width: 550px; margin: 0 auto; }
+        
+        .card { background: #fff; border-radius: 12px; margin-bottom: 15px; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden; cursor: pointer; border: 1px solid #eee; }
+        .card-rank1 { border: 3px solid var(--gold); }
+        .card-rank10 { border: 1.5px solid var(--rose-gold); }
+        
+        /* グリッド部分の修正 */
+        .rank-grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; width: 100%; }
+        .img-container { height: 180px; background: #eee; overflow: hidden; }
+        .card-grid .img-container { height: 130px; } /* 画像を少し高く */
+        .card-rank10 .img-container { height: 110px; }
+        .img-container img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .rank-badge { position: absolute; top: 0; left: 0; background: var(--rose-gold); color: #fff; padding: 4px 12px; font-size: 0.72em; font-weight: bold; border-radius: 0 0 10px 0; z-index: 10; }
+        .badge-gold { background: var(--gold); }
+        .card-body { padding: 10px; }
+        
+        .clinic-name { font-weight: bold; font-size: 1.05em; margin-bottom: 6px; color: #000; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.8em; line-height: 1.4; }
+        
+        /* グリッド内文字崩れ対策 */
+        .card-grid .clinic-name { font-size: 0.9em; min-height: 2.8em; }
+        .info-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 4px; }
+        .price-col { flex: 1; min-width: 0; } /* はみ出し防止 */
+        .stats-col { text-align: right; flex-shrink: 0; }
+        
+        .price-official { font-size: 0.62em; color: #999; margin-bottom: 1px; white-space: nowrap; }
+        .price-actual { font-size: 1.15em; color: var(--accent); font-weight: 900; white-space: nowrap; }
+        .card-grid .price-actual { font-size: 1.0em; } /* グリッド内は少し小さく */
+        
+        .stat-rev { font-size: 0.6em; color: #999; display: block; margin-bottom: 1px; white-space: nowrap; }
+        .stat-score { font-size: 0.95em; color: var(--rose-gold); font-weight: bold; white-space: nowrap; }
+        .card-grid .stat-score { font-size: 0.8em; }
 
-        .header-main {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo-area {
-            font-size: 24px;
-            font-weight: bold;
-            color: #444;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .update-date {
-            text-align: right;
-            font-size: 10px;
-            color: #ccc;
-            margin-bottom: 2px;
-        }
-
-        /* ご要望：新宿クリニック一覧（右詰め・おしゃれフォント） */
-        .area-label {
-            text-align: right;
-            font-family: 'Shippori Mincho', serif;
-            font-size: 13px;
-            color: #888;
-            margin-top: 4px;
-            letter-spacing: 0.1em;
-        }
-
-        /* --- ナビゲーション（タブ） --- */
-        .nav-scroll {
-            display: flex;
-            overflow-x: auto;
-            padding: 12px 10px;
-            gap: 10px;
-            background: #fff;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .nav-item {
-            white-space: nowrap;
-            padding: 7px 14px;
-            background: #f5f5f5;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: bold;
-            color: #666;
-            border: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .nav-item.active {
-            background: #d4a395; /* 画像のピンクベージュ */
-            color: #fff;
-            border-color: #d4a395;
-        }
-
-        /* --- クリニック一覧（バグ修正済みのグリッド） --- */
-        .clinic-container {
-            display: grid;
-            /* 画面の幅に合わせて、窮屈にならないように自動調整（最低160px確保） */
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 12px;
-            padding: 12px;
-            max-width: 600px; /* スマホで見やすい幅に制限 */
-            margin: 0 auto;
-        }
-
-        .clinic-card {
-            background: #fff;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .rank-badge {
-            position: absolute;
-            top: 0;
-            left: 0;
-            background: #c59582;
-            color: #fff;
-            font-size: 10px;
-            font-weight: bold;
-            padding: 2px 10px;
-            border-bottom-right-radius: 8px;
-            z-index: 1;
-        }
-
-        .clinic-img {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            object-fit: cover;
-            background: #eee;
-        }
-
-        .clinic-body {
-            padding: 10px;
-        }
-
-        .clinic-name {
-            font-size: 15px;
-            font-weight: bold;
-            margin-bottom: 8px;
-            line-height: 1.3;
-            /* 2行以上は...で省略 */
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            height: 2.6em; 
-        }
-
-        .price-row {
-            margin-top: 5px;
-        }
-
-        .ad-price {
-            font-size: 11px;
-            color: #999;
-            display: flex;
-            align-items: center;
-            gap: 3px;
-        }
-
-        /* 縦並びバグを絶対に防ぐ設定 */
-        .actual-price-box {
-            margin-top: 8px;
-            display: block;
-            white-space: nowrap; /* 改行させない */
-        }
-
-        .price-label-red {
-            color: #e53935;
-            font-weight: bold;
-            font-size: 15px;
-            letter-spacing: -0.05em;
-        }
-
-        .price-value-red {
-            color: #e53935;
-            font-size: 19px;
-            font-weight: 900;
-        }
-
-        /* パンダアイコン用 */
-        .panda-icon {
-            font-size: 30px;
-        }
+        .card-compact { display: flex; align-items: center; padding: 10px 15px; }
+        .compact-rank { width: 25px; font-weight: bold; color: var(--rose-gold); font-size: 0.95em; }
+        .compact-info { flex: 1; padding: 0 8px; overflow: hidden; }
+        .compact-name { font-size: 0.88em; font-weight: bold; }
+        .compact-right { text-align: right; min-width: 100px; }
+        
+        /* モーダル・その他（V25.1継承） */
+        .knowledge-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.85em; }
+        .knowledge-table th { background: var(--rose-gold); color: white; padding: 10px; text-align: center; }
+        .knowledge-table td { border: 1px solid #eee; padding: 10px; vertical-align: top; }
+        .highlight-box { background: #fff5f5; border: 1.5px solid var(--rose-gold); padding: 15px; border-radius: 10px; margin: 15px 0; }
+        #contact-section { background: #fff; padding: 40px 20px; margin-top: 40px; border-top: 5px solid var(--rose-gold); }
+        .form-control { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .btn-submit { width: 100%; background: var(--rose-gold); color: white; border: none; padding: 15px; border-radius: 30px; font-weight: bold; cursor: pointer; }
+        #detail-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 6000; display: none; overflow-y: auto; }
+        .modal-header { position: sticky; top: 0; padding: 15px; display: flex; justify-content: flex-end; z-index: 7000; background: #fff; }
+        .close-btn { background: #666; color: #fff; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .db-section { padding: 25px 20px; border-bottom: 8px solid #f5f5f5; }
+        .db-label { font-size: 0.85em; color: var(--rose-gold); font-weight: bold; margin-bottom: 12px; display: block; border-left: 5px solid var(--rose-gold); padding-left: 10px; }
+        .review-scroll-box { max-height: 250px; overflow-y: auto; background: #f9f9f9; padding: 15px; border-radius: 12px; border: 1px solid #eee; }
+        .review-item { font-size: 0.88em; margin-bottom: 12px; border-bottom: 1px dashed #ddd; padding-bottom: 8px; }
+        .tag-good { color: #2ecc71; font-weight: bold; margin-right: 5px; }
+        .tag-bad { color: #e74c3c; font-weight: bold; margin-right: 5px; }
+        .father-msg-box { background: var(--pink-bg); padding: 20px; border-radius: 15px; border: 2px dashed var(--rose-gold); font-size: 0.9em; margin-top: 15px; }
+        #floating-panda { position: fixed; bottom: -150px; right: 20px; z-index: 4000; transition: 0.5s; visibility: hidden; }
+        #floating-panda.show { bottom: 20px; visibility: visible; }
+        .wisdom-bubble { position: absolute; bottom: 100px; right: 0; width: 220px; background: #fff; border: 3px solid var(--rose-gold); padding: 15px; border-radius: 20px; font-size: 0.82em; font-weight: bold; box-shadow: 0 8px 25px rgba(0,0,0,0.15); display: none; }
+        .wisdom-bubble.active { display: block; }
+        footer { background: #444; color: #fff; padding: 40px 20px; text-align: center; font-size: 0.8em; }
     </style>
 </head>
 <body>
-
-<header>
-    <div class="update-date">03/03更新</div>
-    <div class="header-main">
-        <div style="font-size: 24px; color: #d4a395;">☰</div>
-        <div class="logo-area">
-            <span style="font-style: italic;">futae.net</span>
-        </div>
-        <div class="panda-icon">🐼</div>
-    </div>
-    <div class="area-label">新宿クリニック一覧</div>
-</header>
-
-<nav class="nav-scroll">
-    <div class="nav-item active">🤖 AI判定順</div>
-    <div class="nav-item">💰 コスパ順</div>
-    <div class="nav-item">💉 技術力順</div>
-    <div class="nav-item">👥 口コミ順</div>
-</nav>
-
-<main class="clinic-container">
-    
-    <div class="clinic-card">
-        <div class="rank-badge">RANK 2</div>
-        <img src="dummy1.jpg" alt="新宿中西クリニック" class="clinic-img">
-        <div class="clinic-body">
-            <div class="clinic-name">新宿中西クリニック</div>
-            <div class="ad-price">📢 広告最安: 66,000円</div>
-            <div class="actual-price-box">
-                <span class="price-label-red">💸実勢目安:</span><br>
-                <span class="price-value-red">66,000円</span>
+    <div id="menu-overlay" onclick="closeMenu()"></div>
+    <nav id="side-menu">
+        <div class="menu-header">futae.net</div>
+        <div class="menu-item" onclick="location.href='index.html'">🏠 トップページ</div>
+        <div class="menu-item" onclick="openInfo('story')">🧭 Futae.netの正義</div>
+        <div class="menu-item" onclick="openInfo('money')">💰 お金のハナシ</div>
+        <div class="menu-item" onclick="openInfo('knowledge')">💉 基本知識</div>
+        <div class="menu-item" onclick="openInfo('logic')">🤖 AI判定の仕組み</div>
+        <div class="menu-sub-title">エリア選択</div>
+        <div class="menu-item" onclick="location.reload()">📍 新宿（公開中）</div>
+    </nav>
+    <header>
+        <div class="header-main">
+            <div class="menu-trigger" onclick="openMenu()">☰</div>
+            <img src="futae_net_final_logo.png" alt="logo" class="header-logo" onclick="location.href='index.html'">
+            <div class="header-right" onclick="togglePandaShow()">
+                <div class="header-update-mini" id="header-date">03/03更新</div>
+                <div class="header-panda">🐼</div>
             </div>
         </div>
+        <div class="area-subtitle">新宿クリニック一覧</div>
+    </header>
+
+    <div id="thanks-msg" style="display:none; background:#e6fffa; color:#2c7a7b; padding:15px; border-radius:10px; text-align:center; margin:10px; border:2px solid #38b2ac;">📮 お問い合わせありがとうございました！</div>
+
+    <div class="sort-container">
+        <div class="sort-btn active" id="sort-ai" onclick="sort('ai')">🤖 AI判定順</div>
+        <div class="sort-btn" id="sort-price" onclick="sort('price')">💰 コスパ順</div>
+        <div class="sort-btn" id="sort-tech" onclick="sort('tech')">💉 技術力順</div>
+        <div class="sort-btn" id="sort-review" onclick="sort('review')">👥 クチコミ数順</div>
     </div>
+    <main id="main-content">
+        <div id="loading-msg" style="text-align:center; padding-top:100px;"><div style="font-size: 3em; margin-bottom: 15px;">🐼</div><div style="font-weight:bold; color:var(--rose-gold);">真実を分析中だパン...</div></div>
+        <div id="rank-1-area"></div><div id="rank-grid-area" class="rank-grid-container"></div><div id="rank-10-area"></div><div id="rank-list-area"></div>
+    </main>
 
-    <div class="clinic-card">
-        <div class="rank-badge">RANK 3</div>
-        <img src="dummy2.jpg" alt="共立美容外科" class="clinic-img">
-        <div class="clinic-body">
-            <div class="clinic-name">共立美容外科 新宿本院</div>
-            <div class="ad-price">📢 広告最安: 66,000円</div>
-            <div class="actual-price-box">
-                <span class="price-label-red">💸実勢目安:</span><br>
-                <span class="price-value-red">66,000円</span>
-            </div>
-        </div>
-    </div>
+    <section id="contact-section">
+        <div style="text-align:center; color:var(--rose-gold); font-weight:bold; margin-bottom:20px;">📮 お問い合わせ</div>
+        <form action="https://formsubmit.co/info@futae.net" method="POST">
+            <input type="hidden" name="_next" value="https://futae.net/shinjuku.html#thanks">
+            <div style="margin-bottom:15px;"><label style="font-size:0.8em; font-weight:bold;">名前</label><input type="text" name="name" class="form-control" placeholder="パンダ花子" required></div>
+            <div style="margin-bottom:15px;"><label style="font-size:0.8em; font-weight:bold;">メール</label><input type="email" name="email" class="form-control" placeholder="example@futae.net" required></div>
+            <div style="margin-bottom:15px;"><label style="font-size:0.8em; font-weight:bold;">内容</label><textarea name="message" class="form-control" rows="4" placeholder="自由に入力してパン" required></textarea></div>
+            <button type="submit" class="btn-submit">問い合わせを届けるパン 🐼</button>
+        </form>
+    </section>
 
-    <div class="clinic-card">
-        <div class="rank-badge">RANK 4</div>
-        <img src="dummy3.jpg" alt="クリニック名" class="clinic-img">
-        <div class="clinic-body">
-            <div class="clinic-name">品川美容外科 新宿院</div>
-            <div class="ad-price">📢 広告最安: 66,000円</div>
-            <div class="actual-price-box">
-                <span class="price-label-red">💸実勢目安:</span><br>
-                <span class="price-value-red">66,000円</span>
-            </div>
-        </div>
-    </div>
+    <div id="floating-panda"><div class="wisdom-bubble" id="wisdom-bubble"><span id="wisdom-cat" style="font-size:0.7em; color:var(--rose-gold); display:block; border-bottom:1px solid #eee; margin-bottom:5px;">Panda Wisdom</span><span id="wisdom-text"></span></div><div style="font-size: 80px; cursor:pointer;" onclick="speakWisdom()">🐼</div></div>
+    <div id="detail-modal"><div class="modal-header"><div class="close-btn" onclick="closeModal()">✕</div></div><div id="modal-body"></div></div>
+    <footer>最終更新日: <span id="footer-date">2026/03/03</span><br>&copy; 2026 futae.net</footer>
 
-    <div class="clinic-card">
-        <div class="rank-badge">RANK 5</div>
-        <img src="dummy4.jpg" alt="クリニック名" class="clinic-img">
-        <div class="clinic-body">
-            <div class="clinic-name">東京中央美容外科 新宿院</div>
-            <div class="ad-price">📢 広告最安: 66,000円</div>
-            <div class="actual-price-box">
-                <span class="price-label-red">💸実勢目安:</span><br>
-                <span class="price-value-red">66,000円</span>
-            </div>
-        </div>
-    </div>
-
-</main>
-
+    <script>
+        const spreadsheetId = '1WE5TRSmMxPFM5q5LSWyvNC9S8glgBKfyofIK-ZDncsY';
+        const clinicCsvUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv&gid=0`;
+        const wisdomCsvUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vQmTgCOB0gT-HGoZEIvTHCJyZsLd_t7thkzzhK1-ocKZQ-mhVCW96Qw_9nuQvQaxl_qrf0A2tRDbeIG/pub?gid=139261368&single=true&output=csv`; 
+        let globalData = []; let wisdomData = [];
+        function cleanNum(v) { if (!v) return 0; return parseFloat(String(v).replace(/[^\d.]/g, '')) || 0; }
+        async function init() { 
+            if(window.location.hash === "#thanks") { document.getElementById('thanks-msg').style.display = 'block'; window.scrollTo(0,0); }
+            await loadClinics(); await loadWisdom(); updateAutoDate();
+        }
+        function updateAutoDate() {
+            const now = new Date();
+            const dateStr = (now.getMonth() + 1).toString().padStart(2, '0') + '/' + now.getDate().toString().padStart(2, '0');
+            const fullDateStr = now.getFullYear() + '/' + dateStr;
+            document.getElementById('header-date').innerText = dateStr + "更新";
+            document.getElementById('footer-date').innerText = fullDateStr;
+        }
+        async function loadClinics() {
+            try {
+                const res = await fetch(clinicCsvUrl); const txt = await res.text();
+                Papa.parse(txt, { header: true, skipEmptyLines: true, transformHeader: h => h.trim(), complete: function(r) {
+                    globalData = r.data.filter(c => String(c.status || '').trim().toLowerCase() === 'active' && c['クリニック名']);
+                    document.getElementById('loading-msg').style.display = 'none'; sort('ai');
+                }});
+            } catch (e) { console.error(e); }
+        }
+        async function loadWisdom() {
+            try {
+                const res = await fetch(wisdomCsvUrl); const txt = await res.text();
+                Papa.parse(txt, { header: true, skipEmptyLines: true, complete: function(r) {
+                    wisdomData = r.data; setTimeout(() => { document.getElementById('floating-panda').classList.add('show'); }, 1200);
+                }});
+            } catch (e) { console.error(e); }
+        }
+        function speakWisdom() {
+            if (wisdomData.length === 0) return;
+            const pool = []; wisdomData.forEach(item => { let p = parseInt(item.Priority) || 1; for (let i = 0; i < p; i++) pool.push(item); });
+            const s = pool[Math.floor(Math.random() * pool.length)]; showPandaBubble(s.Category, s.Answer);
+        }
+        function showPandaBubble(cat, msg) {
+            const b = document.getElementById('wisdom-bubble'); document.getElementById('wisdom-cat').innerText = cat; document.getElementById('wisdom-text').innerText = msg;
+            b.classList.add('active'); setTimeout(() => { b.classList.remove('active'); }, 12000);
+        }
+        function sort(type) {
+            document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('sort-' + type).classList.add('active');
+            if (type === 'review') showPandaBubble("⚠️ 警告", "クチコミ数＝広告費だパン！騙されるなパン！");
+            globalData.sort((a, b) => {
+                const sA = cleanNum(a.total_score), sB = cleanNum(b.total_score);
+                if (type === 'ai') return sB - sA;
+                if (type === 'price') return cleanNum(a.actual_price) - cleanNum(b.actual_price) || sB - sA;
+                if (type === 'tech') return cleanNum(b.score_tech) - cleanNum(a.score_tech) || sB - sA;
+                if (type === 'review') return cleanNum(b.review_total_count) - cleanNum(a.review_total_count) || sB - sA;
+                return 0;
+            }); render();
+        }
+        function createCardHtml(item, rank, type) {
+            const score = cleanNum(item.total_score).toFixed(2), rCount = cleanNum(item.review_total_count).toLocaleString(), actP = cleanNum(item.actual_price).toLocaleString(), offP = cleanNum(item.official_price).toLocaleString();
+            if (type === 'full') {
+                return `<div class="card ${rank===1?'card-rank1':'card-rank10'}" onclick="openModalByData('${item['クリニック名']}')"><div class="rank-badge ${rank===1?'badge-gold':''}">RANK ${rank}</div><div class="img-container"><img src="${item.photo_url || ''}"></div><div class="card-body"><h2 class="clinic-name">${item['クリニック名']}</h2><div class="info-row"><div class="price-col"><div class="price-official">📢 広告最安: ${offP}円</div><div class="price-actual">💸 実勢目安: ${actP}円</div></div><div class="stats-col"><span class="stat-rev">${rCount}件のクチコミ</span><span class="stat-score">AI判定 ${score}</span></div></div></div></div>`;
+            } else if (type === 'grid') {
+                return `<div class="card card-grid" onclick="openModalByData('${item['クリニック名']}')"><div class="rank-badge">RANK ${rank}</div><div class="img-container"><img src="${item.photo_url || ''}"></div><div class="card-body"><div class="clinic-name">${item['クリニック名']}</div><div class="info-row"><div class="price-col"><div class="price-official">📢 ${offP}円</div><div class="price-actual">💸 ${actP}円</div></div><div class="stats-col"><span class="stat-score">AI ${score}</span></div></div></div></div>`;
+            } else {
+                return `<div class="card card-compact" onclick="openModalByData('${item['クリニック名']}')"><div class="compact-rank">${rank}</div><div class="compact-info"><div class="compact-name">${item['クリニック名']}</div></div><div class="compact-right"><div class="price-actual" style="font-size:0.95em;">💸 ${actP}円</div><div class="stat-score" style="font-size:0.7em;">AI ${score}</div></div></div>`;
+            }
+        }
+        function render() {
+            let r1='', rGrid='', r10='', rList='';
+            globalData.forEach((item, i) => { const r=i+1; if(r===1) r1=createCardHtml(item,r,'full'); else if(r<=9) rGrid+=createCardHtml(item,r,'grid'); else if(r===10) r10=createCardHtml(item,r,'full'); else rList+=createCardHtml(item,r,'list'); });
+            document.getElementById('rank-1-area').innerHTML=r1; document.getElementById('rank-grid-area').innerHTML=rGrid; document.getElementById('rank-10-area').innerHTML=r10; document.getElementById('rank-list-area').innerHTML=rList;
+        }
+        function openModalByData(name) {
+            const item = globalData.find(d => d['クリニック名'] === name); const score = cleanNum(item.total_score).toFixed(2);
+            const goodReviews = (item.reviews_good || "クチコミ収集中パン").split('\n').map(r => `<div class="review-item"><span class="tag-good">●</span>${r}</div>`).join('');
+            const badReviews = (item.reviews_bad || "クチコミ収集中パン").split('\n').map(r => `<div class="review-item"><span class="tag-bad">●</span>${r}</div>`).join('');
+            document.getElementById('modal-body').innerHTML = `
+                <div style="height:220px;"><img src="${item.photo_url}" style="width:100%; height:100%; object-fit:cover;"></div>
+                <div class="db-section"><h2>${item['クリニック名']}</h2><p style="color:var(--rose-gold); font-weight:bold; font-size:1.4em; margin:8px 0;">AI総合判定 ${score}</p></div>
+                <div class="db-section"><span class="db-label">👥 現場のリアル</span><div class="review-scroll-box">${goodReviews}${badReviews}</div></div>
+                <div class="db-section"><canvas id="radarChart"></canvas></div>
+                <div class="db-section"><span class="db-label">🧔 お父さんの本音</span><p style="font-size:0.95em; line-height:1.6;"> Beard ${item.father_comment || ''}</p></div>
+                <div style="padding:40px 20px;"><a href="${item.official_url}" target="_blank" style="display:block; background:var(--rose-gold); color:#fff; text-align:center; padding:18px; border-radius:35px; text-decoration:none; font-weight:bold;">公式サイトをチェック</a></div>`;
+            document.getElementById('detail-modal').style.display='block'; setTimeout(() => initRadar(item), 150);
+        }
+        function initRadar(item) { new Chart(document.getElementById('radarChart'), { type:'radar', data:{ labels:['信頼性','安全性','技術力','コスパ'], datasets:[{ data:[cleanNum(item.score_trust), cleanNum(item.score_safety), cleanNum(item.score_tech), cleanNum(item.score_cost)], backgroundColor:'rgba(193,146,129,0.2)', borderColor:'var(--rose-gold)', borderWidth:2 }] }, options:{ scales:{ r:{ min:0, max:5, ticks:{display:false} } }, plugins:{ legend:{display:false} } } }); }
+        function openMenu() { document.getElementById('side-menu').classList.add('open'); document.getElementById('menu-overlay').style.display='block'; }
+        function closeMenu() { document.getElementById('side-menu').classList.remove('open'); document.getElementById('menu-overlay').style.display='none'; }
+        function closeModal() { document.getElementById('detail-modal').style.display = 'none'; }
+        function togglePandaShow() { document.getElementById('floating-panda').classList.toggle('show'); }
+        init();
+    </script>
 </body>
 </html>
