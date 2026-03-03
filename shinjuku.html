@@ -31,7 +31,7 @@
 
         /* --- メインコンテンツ --- */
         .sort-container { background: #fff; padding: 10px 5px; display: flex; gap: 8px; overflow-x: auto; position: sticky; top: 100px; z-index: 900; border-bottom: 1px solid #eee; }
-        .sort-btn { flex: 0 0 auto; background: #fff; border: 2px solid #eee; padding: 8px 14px; border-radius: 20px; font-size: 0.75em; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        .sort-btn { flex: 0 0 auto; background: #fff; border: 1px solid #eee; padding: 8px 14px; border-radius: 20px; font-size: 0.75em; font-weight: bold; cursor: pointer; white-space: nowrap; }
         .sort-btn.active { background: var(--rose-gold); color: white; border-color: var(--rose-gold); }
         
         main { padding: 10px; max-width: 550px; margin: 0 auto; }
@@ -45,7 +45,7 @@
         .price-actual { font-size: 1.1em; color: var(--accent); font-weight: 900; }
         .stat-score { font-size: 0.9em; color: var(--rose-gold); font-weight: bold; }
 
-        /* --- モーダル・DBセクション --- */
+        /* --- モーダル --- */
         #detail-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 6000; display: none; overflow-y: auto; }
         .modal-header { position: sticky; top: 0; padding: 10px; display: flex; justify-content: flex-end; z-index: 7000; background: rgba(255,255,255,0.9); }
         .close-btn { background: #666; color: #fff; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
@@ -58,8 +58,8 @@
         .intro-text { font-size: 0.92em; line-height: 1.6; color: #444; }
         .papa-box { background: var(--pink-bg); padding: 20px; border-radius: 15px; border: 2px dashed var(--rose-gold); font-size: 0.92em; line-height: 1.8; }
         .knowledge-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.85em; }
-        .knowledge-table th { background: var(--rose-gold); color: white; padding: 10px; }
-        .knowledge-table td { border: 1px solid #eee; padding: 10px; }
+        .knowledge-table th { background: var(--rose-gold); color: white; padding: 10px; text-align: center; }
+        .knowledge-table td { border: 1px solid #eee; padding: 10px; text-align: center; }
         
         .review-box { background: #f9f9f9; padding: 15px; border-radius: 10px; font-size: 0.88em; }
         .review-item { margin-bottom: 12px; border-bottom: 1px dashed #ddd; padding-bottom: 8px; line-height: 1.6; }
@@ -73,6 +73,7 @@
         .manga-container { width: 100%; text-align: center; }
         .manga-img { max-width: 100%; border-radius: 10px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto; }
         .quote-box { border-left: 4px solid var(--rose-gold); padding-left: 15px; font-style: italic; color: #555; margin: 15px 0; }
+        .highlight-box { background: #fff5f5; border: 1.5px solid var(--rose-gold); padding: 15px; border-radius: 10px; margin: 15px 0; font-size: 0.9em; }
     </style>
 </head>
 <body>
@@ -126,7 +127,7 @@
             <select name="type" class="form-control">
                 <option>サイトについて</option>
                 <option>料金の表示について</option>
-                <option>カウンセリングについて</option>
+                <option>表示順について</option>
                 <option>その他</option>
             </select>
             <textarea name="message" class="form-control" rows="5" placeholder="自由に入力してパン 🐼" required></textarea>
@@ -140,7 +141,7 @@
     </div>
 
     <div id="floating-panda" style="position:fixed; bottom:20px; right:20px; z-index:4000; visibility:hidden;" onclick="speakWisdom()">
-        <div id="wisdom-bubble" style="display:none; position:absolute; bottom:80px; right:0; width:220px; background:#fff; border:3px solid var(--rose-gold); padding:15px; border-radius:20px; font-size:0.85em; font-weight:bold; box-shadow: 0 4px 15px rgba(0,0,0,0.1);"></div>
+        <div id="wisdom-bubble" style="display:none; position:absolute; bottom:80px; right:0; width:220px; background:#fff; border:3px solid var(--rose-gold); padding:15px; border-radius:20px; font-size:0.85em; font-weight:bold;"></div>
         <div style="font-size: 70px; cursor:pointer;">🐼</div>
     </div>
 
@@ -261,7 +262,7 @@
                 </div>
 
                 <div class="db-section" style="text-align:center;">
-                    <a href="${item.official_url}" target="_blank" style="display:block; background:var(--rose-gold); color:#fff; text-align:center; padding:18px; border-radius:35px; text-decoration:none; font-weight:bold;">公式サイトをチェック</a>
+                    <a href="${item.official_url}" target="_blank" style="display:block; background:var(--rose-gold); color:#fff; padding:18px; border-radius:35px; text-decoration:none; font-weight:bold;">公式サイトをチェック</a>
                 </div>
 
                 <div class="db-section">
@@ -296,31 +297,107 @@
         }
 
         function openInfo(t) {
-            closeMenu();
-            const b = document.getElementById('modal-body');
-            b.innerHTML = '';
+            const b = document.getElementById('modal-body'); closeMenu();
             if(t==='story') {
-                b.innerHTML = `<div class="manga-container" style="padding:20px 0;"><h2 style="color:var(--rose-gold);">🧭 Futae.netの正義</h2><img src="story1.jpg" class="manga-img"><img src="story2.jpg" class="manga-img"><img src="story3.jpg" class="manga-img"><img src="story4.jpg" class="manga-img"><div class="papa-box">「次女の二重への思いを大切に、それに向け頑張ったアルバイト代を正しいクリニックで使ってほしい」<br><br>父親のそんな思いからAIを味方にして作ったのが、この <strong>『Futae.net』</strong> です。<br>このサイトの使命は忖度なしの順位をつけること。<br>なけなしのアルバイト代でプチ整形にチャレンジしたいそんな君たちへ、自信をもってオススメします。</div></div>`;
+                b.innerHTML = `
+                <div class="manga-container" style="padding:20px 0;">
+                    <h2 style="color:var(--rose-gold); margin-bottom:25px;">🧭 Futae.netの正義</h2>
+                    <img src="story1.jpg" class="manga-img">
+                    <img src="story2.jpg" class="manga-img">
+                    <img src="story3.jpg" class="manga-img">
+                    <img src="story4.jpg" class="manga-img">
+                    <div class="papa-box" style="margin:20px;">
+                        「次女の二重への思いを大切に、それに向け頑張ったアルバイト代を正しいクリニックで使ってほしい」<br><br>
+                        父親のそんな思いからAIを味方にして作ったのが、この <strong>『Futae.net』</strong> です。<br>
+                        このサイトは24時間AIを動かし続けるためのサーバー代として、一部アフィリエイトを利用しています。が、安心してください。それとこれとは別、このサイトの使命は忖度なしの順位をつけること。<br>
+                        なけなしのアルバイト代でプチ整形にチャレンジしたいそんな君たちへ、自信をもってオススメします。<br><br>
+                        「ここが良かった」や「こういう機能がほしい」、そんな要望があればぜひ問い合わせからお気軽にご連絡ください。
+                    </div>
+                </div>`;
             } else if(t==='money') {
+                // SnippetになかったためV25.0より補完
                 b.innerHTML = `<div style="padding:40px 20px;"><h2 style="color:var(--rose-gold);">💰 知っておきたい「お金」のハナシ</h2>
                     <p style="font-weight:bold;">「風邪のときは安いのに、なんで整形は高いの？🤔」</p>
-                    <p style="font-size:0.9em; line-height:1.7;">病院に行ってお会計をするとき、「風邪のときは1,500円くらいだったのに、二重整形はなんでこんなに高いの？同じお医者さんでしょ？」と不思議に思ったことはありませんか？<br>実は、そこには日本の医療の「あるルール」が関係しているんだパン！🐼</p>
-                    <div class="db-label">1. 美容整形は「自由診療（じゆうしんりょう）」</div>
-                    <p style="font-size:0.85em;">美容整形は「病気を治すこと」ではなく、「今よりもっと綺麗になること」が目的。残念ながら、これには国が認めた「公的医療保険」が使えないんだパン。全額自己負担、これを「自由診療」と呼ぶよ。</p>
+                    <p style="font-size:0.9em; line-height:1.7;">病院に行ってお会計をするとき、「風邪のときは1,500円くらいだったのに、二重整形はなんでこんなに高いの？同じお医者さんでしょ？」と不思議に思ったことはありませんか？実は、そこには日本の医療の「あるルール」が関係しているんだパン！🐼</p>
+                    <div class="db-label">1. 美容整形は「自由診療」</div>
+                    <p style="font-size:0.85em;">全額自己負担、これを「自由診療」と呼ぶよ。</p>
                     <div class="db-label">2. クリニックが自由に値段を決められる！</div>
-                    <p style="font-size:0.85em;">自由診療は文字通り「自由」。クリニックが自分たちで「うちはこの金額でやります！」と自由に決めることができるんだパン。<br>・先生の技術料<br>・クリニックの場所代<br>・テレビCMや広告費<br>これらが全部お値段に乗ってくるから、同じ術式でも大きな開きが出るんだね。</p>
-                    <div class="papa-box">🧔<strong>パパからのアドバイス</strong><br>「自由診療」って聞くと難しそうだけど、要はお買い物と同じなんだ。同じ洋服でもブランドによって値段が違うように、美容整形もクリニックによって全然違う。<br>「病気を治すわけじゃないから、全額自己負担」<br>このことをしっかり頭に入れて、なけなしのバイト代を出す価値があるかどうか、このサイトのAI判定を参考にしてじっくり選んでほしいパン！🐼</div></div>`;
+                    <p style="font-size:0.85em;">先生の技術料、場所代、広告費これらが全部お値段に乗ってくるんだね。</p>
+                    <div class="papa-box">🧔「病気を治すわけじゃないから、全額自己負担。このことをしっかり頭に入れて、バイト代を出す価値があるかどうか選んでほしいパン！🐼」</div></div>`;
             } else if(t==='knowledge') {
-                b.innerHTML = `<div style="padding:40px 20px;"><h2 style="color:var(--rose-gold);">💉 二重整形の基本知識</h2><p style="font-weight:bold;">仕組みを知れば失敗は防げるパン！🐼</p>
-                    <details open style="margin-bottom:15px;"><summary style="font-weight:bold; cursor:pointer; background:#eee; padding:10px; border-radius:5px;">1. 術式の違い：埋没法 vs 切開法</summary>
-                        <table class="knowledge-table"><tr><th>項目</th><th>埋没法</th><th>切開法</th></tr><tr><td>方法</td><td>細い糸で留める</td><td>切ってラインを作る</td></tr><tr><td>価格目安</td><td>3万〜15万円</td><td>20万〜40万円</td></tr></table></details>
-                    <details style="margin-bottom:15px;"><summary style="font-weight:bold; cursor:pointer; background:#eee; padding:10px; border-radius:5px;">2. 「何点留め」って何？</summary><div style="padding:10px; font-size:0.9em;"><p>1〜2点留め: 標準。まぶたが薄い人向。3〜4点留め: 厚い人向。固定力強。</p></div></details></div>`;
+                b.innerHTML = `
+                <div style="padding:40px 20px;">
+                    <h2 style="color:var(--rose-gold);">💉 二重整形の基本知識</h2>
+                    <p style="font-weight:bold;">安いには理由がある、高いにも理由がある。まずは仕組みを知ろうパン！🐼</p>
+                    <details open style="margin-bottom:15px;">
+                        <summary style="font-weight:bold; cursor:pointer; background:#eee; padding:10px; border-radius:5px;">1. 術式の違い：埋没法 vs 切開法</summary>
+                        <table class="knowledge-table">
+                            <tr><th>項目</th><th>埋没法</th><th>切開法</th></tr>
+                            <tr><td>方法</td><td>細い糸で留める</td><td>切ってラインを作る</td></tr>
+                            <tr><td>特徴</td><td>腫れ少、修正可</td><td>半永久、厚いまぶた向</td></tr>
+                            <tr><td>価格目安</td><td>3万〜15万円</td><td>20万〜40万円</td></tr>
+                        </table>
+                    </details>
+                    <details style="margin-bottom:15px;">
+                        <summary style="font-weight:bold; cursor:pointer; background:#eee; padding:10px; border-radius:5px;">2. 「何点留め」って何？</summary>
+                        <div style="padding:10px; font-size:0.9em;">
+                            <p><strong>1〜2点留め:</strong> まぶたが薄い人向け。2点が現代の標準だパン。</p>
+                            <p><strong>3〜4点留め:</strong> まぶたが厚めの人向け。固定力が強いパン。</p>
+                            <div class="highlight-box">
+                                <strong>💡 パンダの助言</strong><br>
+                                点数が多い＝良いとは限らない！まぶたへの負担（腫れ）も増えるから、最適な数を見極めるのがプロの技だパン。
+                            </div>
+                        </div>
+                    </details>
+                    <details style="margin-bottom:15px;">
+                        <summary style="font-weight:bold; cursor:pointer; background:#eee; padding:10px; border-radius:5px;">3. よくセットで提案されるオプション</summary>
+                        <div style="padding:10px; font-size:0.9em;">
+                            <ul><li>目頭切開</li><li>目尻切開</li><li>まぶたの脂肪取り</li></ul>
+                        </div>
+                    </details>
+                    <details>
+                        <summary style="font-weight:bold; cursor:pointer; background:#eee; padding:10px; border-radius:5px;">4. 料金のカラクリ：オプションに注意</summary>
+                        <div style="padding:10px; font-size:0.9em;">
+                            <p>広告の「29,800円」には、麻酔や保証プランが含まれていないことが多いんだパン。</p>
+                            <div class="highlight-box" style="border-color:var(--accent);">
+                                <strong>⚠️ ここに注目！</strong><br>
+                                「極細の針」や「特殊な糸」を勧められても、原価は数百円の差だということを肝に銘じるパン！
+                            </div>
+                        </div>
+                    </details>
+                </div>`;
             } else if(t==='counseling') {
-                b.innerHTML = `<div style="padding:40px 20px;"><h2 style="color:var(--rose-gold);">🗣️ カウンセリングのコツ</h2><p style="font-weight:bold;">お財布を守るためのチェックリストだパン 🐼</p>
-                    <div class="db-label">1. 予算を超えた時の「断り文句」</div><div class="quote-box">「親と約束しているので、独断では決められません」</div>
-                    <div class="db-label">2. 保証内容のチェック</div><p style="font-size:0.9em;">「再手術無料」でも「麻酔代で数万円かかる」ケースが多いパン。そこを確認してパン！</p></div>`;
+                b.innerHTML = `
+                <div style="padding:40px 20px;">
+                    <h2 style="color:var(--rose-gold);">🗣️ カウンセリングのコツ</h2>
+                    <p style="font-weight:bold;">先生の前で緊張しちゃダメ！お財布を守るためのチェックリストだパン 🐼</p>
+                    <div class="db-label">1. 予算を超えた時の「断り文句」</div>
+                    <div class="quote-box">
+                        「親と約束しているので、独断では決められません」<br>
+                        「一旦、一晩じっくり考えたいので、今日のところは失礼します」
+                    </div>
+                    <div class="db-label">2. デザイニングと耐久性の確認</div>
+                    <p style="font-size:0.9em;">納得いくまで確認すること！</p>
+                    <div class="db-label">3. 保証内容の「落とし穴」をチェック</div>
+                    <p style="font-size:0.9em;">「麻酔代や針代で数万円かかる」ケースが多いパン。そこを確認してパン！</p>
+                    <div class="db-label">4. 理想の写真を3枚用意する</div>
+                    <div class="highlight-box">
+                        なりたい目2枚、なりたくない目1枚。意思疎通が劇的にスムーズになるパン。
+                    </div>
+                </div>`;
             } else if(t==='logic') {
-                b.innerHTML = `<div style="padding:40px 20px;"><h2 style="color:var(--rose-gold);">🤖 AI判定の仕組み</h2><p>Futae.net独自のアルゴリズムによる判定式です。</p><div style="background:#f5f5f5; padding:20px; border-radius:10px; font-weight:bold; text-align:center; margin-bottom:20px;">Score = (Trust×4 + Safety×3 + Tech×2 + Cost×1) / 10</div></div>`;
+                b.innerHTML = `
+                <div style="padding:40px 20px;">
+                    <h2 style="color:var(--rose-gold);">🤖 AI判定の仕組み</h2>
+                    <div style="background:#f5f5f5; padding:20px; border-radius:10px; font-family:serif; text-align:center; margin-bottom:20px; font-weight:bold;">
+                        Score = (Trust×4 + Safety×3 + Tech×2 + Cost×1) / 10
+                    </div>
+                    <p style="font-weight:bold; color:var(--rose-gold);">価格の透明性と技術力を最優先に評価しているパン！</p>
+                    <p style="font-size:0.9em; line-height:1.7;">1万件以上のデータを独自のアルゴリズムで算定しAIが出した数値だパン。</p>
+                    <div class="review-box" style="margin-top:30px; font-size:0.85em;">
+                        <strong>【クリニック関係者の方へ】</strong><br>算定基準を変えることはありませんが、利用者への特典提供などあればご連絡くださいパン。
+                    </div>
+                </div>`;
             }
             document.getElementById('detail-modal').style.display = 'block';
         }
