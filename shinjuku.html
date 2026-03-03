@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>futae.net | 新宿二重整形AI診断 V25.3</title>
+    <title>futae.net | 新宿二重整形AI診断</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Shippori+Mincho&display=swap" rel="stylesheet">
@@ -29,14 +29,13 @@
         .menu-item { padding: 18px 20px; border-bottom: 1px solid #eee; font-weight: bold; cursor: pointer; font-size: 0.95em; color: #444; }
         .menu-sub-title { background: #f9f9f9; padding: 10px 20px; font-size: 0.75em; color: #999; font-weight: bold; }
 
-        /* --- メインコンテンツ --- */
+        /* --- ソート・メイン --- */
         .sort-container { background: #fff; padding: 10px 5px; display: flex; gap: 8px; overflow-x: auto; position: sticky; top: 100px; z-index: 900; border-bottom: 1px solid #eee; }
         .sort-btn { flex: 0 0 auto; background: #fff; border: 1px solid #eee; padding: 8px 14px; border-radius: 20px; font-size: 0.75em; font-weight: bold; cursor: pointer; white-space: nowrap; }
         .sort-btn.active { background: var(--rose-gold); color: white; border-color: var(--rose-gold); }
         
         main { padding: 10px; max-width: 550px; margin: 0 auto; }
         .card { background: #fff; border-radius: 12px; margin-bottom: 15px; position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden; cursor: pointer; border: 1px solid #eee; }
-        .rank-badge { position: absolute; top: 0; left: 0; background: var(--rose-gold); color: #fff; padding: 4px 12px; font-size: 0.72em; font-weight: bold; border-radius: 0 0 10px 0; z-index: 10; }
         .rank-grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .img-container { height: 180px; background: #eee; overflow: hidden; }
         .card-grid .img-container { height: 125px; }
@@ -51,35 +50,35 @@
         .modal-header { position: sticky; top: 0; padding: 10px; display: flex; justify-content: flex-end; z-index: 7000; background: rgba(255,255,255,0.9); }
         .close-btn { background: #666; color: #fff; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         
-        .db-section { padding: 15px 20px; border-bottom: 4px solid #f5f5f5; }
+        .db-section { padding: 15px 20px; border-bottom: 6px solid #f5f5f5; }
         .db-section:last-child { border-bottom: none; }
-        .db-label { font-size: 0.8em; color: var(--rose-gold); font-weight: bold; margin-bottom: 5px; display: block; border-left: 4px solid var(--rose-gold); padding-left: 8px; }
+        .db-label { font-size: 0.8em; color: var(--rose-gold); font-weight: bold; margin-bottom: 8px; display: block; border-left: 4px solid var(--rose-gold); padding-left: 8px; }
         
-        /* コンパクト化調整 */
-        .modal-title { font-size: 1.3em; font-weight: bold; margin: 0; }
-        .modal-score-box { background: var(--pink-bg); padding: 10px; border-radius: 8px; text-align: center; margin-top: 5px; }
-        .intro-text { font-size: 0.9em; line-height: 1.6; color: #555; background: #fff; padding: 5px 0; }
-        .papa-box { background: #fef9f0; border: 1px solid #fae1b6; padding: 15px; border-radius: 12px; font-size: 0.9em; }
-        
-        .review-box { background: #f9f9f9; padding: 12px; border-radius: 8px; font-size: 0.85em; max-height: 300px; overflow-y: auto; }
-        .review-item { margin-bottom: 8px; border-bottom: 1px dashed #ddd; padding-bottom: 5px; line-height: 1.5; }
-        .review-item:last-child { border-bottom: none; margin-bottom: 0; }
+        .modal-title { font-size: 1.35em; font-weight: bold; margin: 0; }
+        .modal-score-box { background: var(--pink-bg); padding: 12px; border-radius: 8px; text-align: center; margin-top: 10px; }
+        .intro-text { font-size: 0.92em; line-height: 1.6; color: #444; }
+        .papa-box { background: #fef9f0; border: 1px solid #fae1b6; padding: 15px; border-radius: 12px; font-size: 0.92em; line-height: 1.7; }
+        .review-box { background: #f9f9f9; padding: 12px; border-radius: 8px; font-size: 0.88em; }
+        .review-item { margin-bottom: 10px; border-bottom: 1px dashed #ddd; padding-bottom: 8px; }
+        .review-item:last-child { border-bottom: none; }
 
-        /* その他 V25.1継承 */
-        .manga-img { max-width: 100%; border-radius: 10px; margin-bottom: 10px; }
-        #floating-panda { position: fixed; bottom: 20px; right: 20px; z-index: 4000; visibility: hidden; }
-        #floating-panda.show { visibility: visible; }
+        #contact-section { background: #fff; padding: 40px 20px; margin-top: 40px; border-top: 5px solid var(--rose-gold); }
+        .form-control { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; margin-bottom: 10px; }
+        .btn-submit { width: 100%; background: var(--rose-gold); color: white; border: none; padding: 15px; border-radius: 30px; font-weight: bold; cursor: pointer; }
+
         footer { background: #444; color: #fff; padding: 30px 15px; text-align: center; font-size: 0.75em; }
+        .manga-img { max-width: 100%; border-radius: 10px; margin-bottom: 15px; border: 1px solid #eee; }
     </style>
 </head>
 <body>
     <div id="menu-overlay" onclick="closeMenu()"></div>
     <nav id="side-menu">
         <div class="menu-header">futae.net</div>
-        <div class="menu-item" onclick="location.href='index.html'">🏠 トップページ</div>
+        <div class="menu-item" onclick="location.href='index.html'">🏠 トップページ (エリア選択)</div>
         <div class="menu-item" onclick="openInfo('story')">🧭 Futae.netの正義 (マンガ)</div>
         <div class="menu-item" onclick="openInfo('money')">💰 知っておきたい「お金」のハナシ</div>
         <div class="menu-item" onclick="openInfo('knowledge')">💉 二重整形の基本知識</div>
+        <div class="menu-item" onclick="openInfo('counseling')">🗣️ カウンセリングのコツ</div>
         <div class="menu-item" onclick="openInfo('logic')">🤖 AI判定の仕組み</div>
         <div class="menu-sub-title">エリア選択</div>
         <div class="menu-item" onclick="location.reload()">📍 新宿（公開中）</div>
@@ -105,24 +104,42 @@
     </div>
 
     <main id="main-content">
-        <div id="loading-msg" style="text-align:center; padding-top:100px;">🐼 分析中だパン...</div>
+        <div id="loading-msg" style="text-align:center; padding-top:100px;">🐼 真実を分析中だパン...</div>
         <div id="rank-1-area"></div>
         <div id="rank-grid-area" class="rank-grid-container"></div>
         <div id="rank-10-area"></div>
         <div id="rank-list-area"></div>
     </main>
 
+    <section id="contact-section">
+        <div style="text-align:center; color:var(--rose-gold); font-weight:bold; margin-bottom:20px; font-size:1.2em;">📮 お問い合わせ</div>
+        <form action="https://formsubmit.co/info@futae.net" method="POST">
+            <input type="hidden" name="_next" value="https://futae.net/shinjuku.html#thanks">
+            <input type="hidden" name="_captcha" value="false">
+            <input type="text" name="name" class="form-control" placeholder="お名前（ニックネーム可）" required>
+            <input type="email" name="email" class="form-control" placeholder="メールアドレス" required>
+            <select name="type" class="form-control">
+                <option>サイトについて</option>
+                <option>料金の表示について</option>
+                <option>表示順について</option>
+                <option>その他</option>
+            </select>
+            <textarea name="message" class="form-control" rows="5" placeholder="メッセージ内容を入力してパン 🐼" required></textarea>
+            <button type="submit" class="btn-submit">問い合わせを届けるパン 🐼</button>
+        </form>
+    </section>
+
     <div id="detail-modal">
         <div class="modal-header"><div class="close-btn" onclick="closeModal()">✕</div></div>
         <div id="modal-body"></div>
     </div>
 
-    <div id="floating-panda" onclick="speakWisdom()">
-        <div id="wisdom-bubble" style="display:none; position:absolute; bottom:80px; right:0; width:200px; background:#fff; border:2px solid var(--rose-gold); padding:10px; border-radius:15px; font-size:0.8em;"></div>
-        <div style="font-size: 60px; cursor:pointer;">🐼</div>
+    <div id="floating-panda" style="position:fixed; bottom:20px; right:20px; z-index:4000; visibility:hidden;" onclick="speakWisdom()">
+        <div id="wisdom-bubble" style="display:none; position:absolute; bottom:80px; right:0; width:220px; background:#fff; border:3px solid var(--rose-gold); padding:15px; border-radius:20px; font-size:0.85em; font-weight:bold; box-shadow: 0 4px 15px rgba(0,0,0,0.1);"></div>
+        <div style="font-size: 70px; cursor:pointer;">🐼</div>
     </div>
 
-    <footer>最終更新日: <span id="footer-date">2026/03/03</span><br>&copy; 2026 futae.net</footer>
+    <footer>&copy; 2026 futae.net</footer>
 
     <script>
         const spreadsheetId = '1WE5TRSmMxPFM5q5LSWyvNC9S8glgBKfyofIK-ZDncsY';
@@ -136,8 +153,7 @@
         async function init() {
             await loadClinics();
             await loadWisdom();
-            const now = new Date();
-            document.getElementById('footer-date').innerText = now.getFullYear() + "/" + (now.getMonth()+1) + "/" + now.getDate();
+            document.getElementById('floating-panda').style.visibility = 'visible';
         }
 
         async function loadClinics() {
@@ -153,10 +169,7 @@
         async function loadWisdom() {
             const res = await fetch(wisdomCsvUrl);
             const txt = await res.text();
-            Papa.parse(txt, { header: true, complete: (r) => {
-                wisdomData = r.data;
-                document.getElementById('floating-panda').classList.add('show');
-            }});
+            Papa.parse(txt, { header: true, complete: (r) => { wisdomData = r.data; }});
         }
 
         function sort(type) {
@@ -176,16 +189,16 @@
             const actP = cleanNum(item.actual_price).toLocaleString();
             const score = cleanNum(item.total_score).toFixed(2);
             if (type === 'list') {
-                return `<div class="card" style="display:flex; align-items:center; padding:10px;" onclick="openModalByData('${item['クリニック名']}')"><div style="width:30px; font-weight:bold;">${rank}</div><div style="flex:1;">${item['クリニック名']}</div><div style="text-align:right;"><div class="price-actual" style="font-size:0.9em;">¥${actP}</div></div></div>`;
+                return `<div class="card" style="display:flex; align-items:center; padding:10px;" onclick="openModalByData('${item['クリニック名']}')"><div style="width:25px; font-weight:bold; color:var(--rose-gold);">${rank}</div><div style="flex:1; font-weight:bold; font-size:0.9em;">${item['クリニック名']}</div><div style="text-align:right;"><div class="price-actual" style="font-size:0.9em;">¥${actP}</div></div></div>`;
             }
-            return `<div class="card ${type==='grid'?'card-grid':''}" onclick="openModalByData('${item['クリニック名']}')">
+            return `<div class="card" onclick="openModalByData('${item['クリニック名']}')">
                 <div class="rank-badge">RANK ${rank}</div>
                 <div class="img-container"><img src="${item.photo_url || ''}"></div>
                 <div class="card-body">
                     <div class="clinic-name">${item['クリニック名']}</div>
                     <div style="display:flex; justify-content:space-between; align-items:flex-end;">
                         <div class="price-actual">¥${actP}</div>
-                        <div class="stat-score">AI ${score}</div>
+                        <div class="stat-score">AI判定 ${score}</div>
                     </div>
                 </div>
             </div>`;
@@ -209,18 +222,16 @@
         function openModalByData(name) {
             const item = globalData.find(d => d['クリニック名'] === name);
             const score = cleanNum(item.total_score).toFixed(2);
-            
-            // クチコミの空白行を排除
-            const formatReviews = (str, tag) => {
-                if(!str) return "データ収集中だパン";
-                return str.split('\n').filter(line => line.trim() !== "").map(line => `<div class="review-item"><span style="color:${tag==='good'?'#2ecc71':'#e74c3c'}">●</span> ${line}</div>`).join('');
+            const formatReviews = (str, color) => {
+                if(!str) return "";
+                return str.split('\n').filter(l => l.trim()).map(l => `<div class="review-item"><span style="color:${color}">●</span> ${l}</div>`).join('');
             };
 
             const modalBody = document.getElementById('modal-body');
             modalBody.innerHTML = `
-                <div style="height:200px;"><img src="${item.photo_url}" style="width:100%; height:100%; object-fit:cover;"></div>
+                <div style="height:220px;"><img src="${item.photo_url}" style="width:100%; height:100%; object-fit:cover;"></div>
                 
-                <div class="db-section" style="padding-bottom:10px;">
+                <div class="db-section">
                     <h2 class="modal-title">${item['クリニック名']}</h2>
                     <div class="modal-score-box">
                         <span style="font-size:0.8em; color:var(--rose-gold); font-weight:bold;">AI総合判定</span><br>
@@ -228,42 +239,38 @@
                     </div>
                 </div>
 
-                <div class="db-section">
-                    <div class="intro-text">${item.summary_intro || ''}</div>
-                </div>
+                <div class="db-section"><div class="intro-text">${item.summary_intro || ''}</div></div>
 
-                <div class="db-section"><canvas id="radarChart" style="max-height:200px;"></canvas></div>
+                <div class="db-section"><canvas id="radarChart" style="max-height:220px;"></canvas></div>
 
                 <div class="db-section">
                     <span class="db-label">📋 詳細データ</span>
-                    <table style="width:100%; font-size:0.85em; border-collapse:collapse;">
-                        <tr style="border-bottom:1px solid #eee;"><td style="padding:5px 0;">📢 広告最安</td><td style="text-align:right;">¥${cleanNum(item.official_price).toLocaleString()}</td></tr>
-                        <tr style="border-bottom:1px solid #eee;"><td style="padding:5px 0; font-weight:bold;">💸 実勢目安</td><td style="text-align:right; color:var(--accent); font-weight:bold;">¥${cleanNum(item.actual_price).toLocaleString()}</td></tr>
-                        <tr style="border-bottom:1px solid #eee;"><td style="padding:5px 0;">⚖️ 価格ギャップ</td><td style="text-align:right;">¥${cleanNum(item.gap_score).toLocaleString()}</td></tr>
-                        <tr><td style="padding:5px 0;">⏱ ダウンタイム</td><td style="text-align:right;">${item.downtime_info || '3~7日'}</td></tr>
+                    <table style="width:100%; font-size:0.9em; border-collapse:collapse; line-height:2.2;">
+                        <tr style="border-bottom:1px solid #eee;"><td>📢 広告最安</td><td style="text-align:right;">¥${cleanNum(item.official_price).toLocaleString()}</td></tr>
+                        <tr style="border-bottom:1px solid #eee; font-weight:bold;"><td>💸 実勢目安</td><td style="text-align:right; color:var(--accent);">¥${cleanNum(item.actual_price).toLocaleString()}</td></tr>
+                        <tr style="border-bottom:1px solid #eee;"><td>⚖️ 価格ギャップ</td><td style="text-align:right;">¥${cleanNum(item.gap_score).toLocaleString()}</td></tr>
+                        <tr><td>⏱ ダウンタイム</td><td style="text-align:right;">${item.downtime_info || '3〜7日'}</td></tr>
                     </table>
                 </div>
 
                 <div class="db-section" style="text-align:center;">
-                    <a href="${item.official_url}" target="_blank" style="display:block; background:var(--rose-gold); color:#fff; padding:15px; border-radius:30px; text-decoration:none; font-weight:bold; font-size:1em;">公式サイトをチェック</a>
+                    <a href="${item.official_url}" target="_blank" style="display:block; background:var(--rose-gold); color:#fff; padding:18px; border-radius:35px; text-decoration:none; font-weight:bold;">公式サイトをチェック</a>
                 </div>
 
                 <div class="db-section">
                     <span class="db-label">🧔 パパの本音</span>
-                    <div class="papa-box">「${item.father_comment || 'いいクリニックだね。'}」</div>
+                    <div class="papa-box">🧔 「${item.father_comment || '自分の娘にも勧められるか、という視点で見てるパン。'}」</div>
                 </div>
 
-                <div class="db-section">
-                    <div class="intro-text" style="font-weight:bold; color:var(--rose-gold);">${item.review_summary || ''}</div>
-                </div>
+                <div class="db-section"><div class="intro-text" style="font-weight:bold; color:var(--rose-gold);">${item.review_summary || ''}</div></div>
 
                 <div class="db-section">
                     <span class="db-label">👥 現場のリアル</span>
                     <div class="review-box">
-                        <div style="font-weight:bold; margin-bottom:5px; color:#2ecc71;">[良い点]</div>
-                        ${formatReviews(item.reviews_good, 'good')}
-                        <div style="font-weight:bold; margin-top:10px; margin-bottom:5px; color:#e74c3c;">[気になる点]</div>
-                        ${formatReviews(item.reviews_bad, 'bad')}
+                        <div style="font-weight:bold; color:#2ecc71; margin-bottom:5px;">[良いクチコミ]</div>
+                        ${formatReviews(item.reviews_good, '#2ecc71')}
+                        <div style="font-weight:bold; color:#e74c3c; margin-top:15px; margin-bottom:5px;">[気になるクチコミ]</div>
+                        ${formatReviews(item.reviews_bad, '#e74c3c')}
                     </div>
                 </div>
             `;
@@ -278,16 +285,24 @@
                     },
                     options: { scales: { r: { min: 0, max: 5, ticks: { display: false } } }, plugins: { legend: { display: false } } }
                 });
-            }, 100);
+            }, 150);
         }
 
         function openInfo(t) {
             closeMenu();
             const b = document.getElementById('modal-body');
-            if(t==='story') b.innerHTML = `<div style="padding:20px;"><img src="story1.jpg" class="manga-img"><img src="story2.jpg" class="manga-img"></div>`;
-            else if(t==='money') b.innerHTML = `<div style="padding:20px;"><h2>💰 お金のハナシ</h2><p>自由診療だからこそ、正しい比較が必要です。</p></div>`;
-            else if(t==='knowledge') b.innerHTML = `<div style="padding:20px;"><h2>💉 基本知識</h2><p>埋没法と切開法の違いを知りましょう。</p></div>`;
-            else if(t==='logic') b.innerHTML = `<div style="padding:20px;"><h2>🤖 AI判定の仕組み</h2><p>独自のアルゴリズムで、広告に騙されない順位を出しています。</p></div>`;
+            b.innerHTML = ''; // クリア
+            if(t==='story') {
+                b.innerHTML = `<div class="manga-container" style="padding:20px;"><h2 style="color:var(--rose-gold);">🧭 Futae.netの正義</h2><img src="story1.jpg" class="manga-img"><img src="story2.jpg" class="manga-img"><img src="story3.jpg" class="manga-img"><img src="story4.jpg" class="manga-img"><div class="papa-box">父親の思いからAIを味方にして作ったのが、この『Futae.net』です。なけなしのアルバイト代でチャレンジしたい君たちへ、自信をもってオススメします。</div></div>`;
+            } else if(t==='money') {
+                b.innerHTML = `<div style="padding:30px 20px;"><h2 style="color:var(--rose-gold);">💰 お金のハナシ</h2><p>美容整形は「自由診療」。クリニックが自由に値段を決められるからこそ、正しい比較が必要です。</p><div class="papa-box">🧔「病気を治すわけじゃないから、全額自己負担。このことをしっかり頭に入れて、バイト代を出す価値があるか選んでほしいパン！」</div></div>`;
+            } else if(t==='knowledge') {
+                b.innerHTML = `<div style="padding:30px 20px;"><h2 style="color:var(--rose-gold);">💉 基本知識</h2><p>埋没法（糸で留める）と切開法（切って作る）の違いなど、仕組みを知れば失敗は防げるパン！</p></div>`;
+            } else if(t==='counseling') {
+                b.innerHTML = `<div style="padding:30px 20px;"><h2 style="color:var(--rose-gold);">🗣️ カウンセリングのコツ</h2><div class="papa-box">予算を超えた時の断り文句：「親と約束しているので、独断では決められません」これを言えばOKだパン！</div></div>`;
+            } else if(t==='logic') {
+                b.innerHTML = `<div style="padding:30px 20px;"><h2 style="color:var(--rose-gold);">🤖 AI判定の仕組み</h2><div style="background:#eee; padding:20px; border-radius:10px; text-align:center;">Score = (信頼×4 + 安全×3 + 技術×2 + コスパ×1) / 10</div></div>`;
+            }
             document.getElementById('detail-modal').style.display='block';
         }
 
@@ -296,11 +311,11 @@
         function closeMenu() { document.getElementById('side-menu').classList.remove('open'); document.getElementById('menu-overlay').style.display='none'; }
         function togglePandaShow() { document.getElementById('floating-panda').classList.toggle('show'); }
         function speakWisdom() {
-            if(wisdomData.length===0) return;
+            if(!wisdomData.length) return;
             const s = wisdomData[Math.floor(Math.random()*wisdomData.length)];
             const b = document.getElementById('wisdom-bubble');
             b.innerText = s.Answer; b.style.display = 'block';
-            setTimeout(()=> b.style.display='none', 5000);
+            setTimeout(()=> b.style.display='none', 8000);
         }
 
         init();
