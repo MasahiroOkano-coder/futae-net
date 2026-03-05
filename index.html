@@ -13,97 +13,121 @@
         /* --- ヘッダー --- */
         header { background: #fff; height: 90px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid #eee; }
         .header-logo { height: 50px; cursor: pointer; }
-        .menu-trigger { font-size: 32px; cursor: pointer; color: var(--rose-gold); width: 65px; }
         .header-panda { font-size: 32px; }
 
         /* --- メインビジュアル --- */
         .hero { background: #fff; padding: 40px 20px; text-align: center; border-bottom: 5px solid var(--rose-gold); }
-        .hero-title { font-size: 1.5em; font-weight: 900; color: var(--rose-gold); margin-bottom: 10px; }
-        .hero-desc { font-size: 0.9em; line-height: 1.8; color: #666; }
+        .hero-title { font-size: 1.4em; font-weight: 900; color: var(--rose-gold); margin-bottom: 10px; }
 
         /* --- エリア選択 --- */
-        .area-section { padding: 30px 15px; }
-        .area-card { background: #fff; border-radius: 15px; padding: 25px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: #333; border: 2px solid transparent; transition: 0.3s; }
+        .area-section { padding: 30px 15px; max-width: 500px; margin: 0 auto; }
+        .area-card { background: #fff; border-radius: 15px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: #333; border: 2px solid transparent; transition: 0.3s; }
         .area-card.active { border-color: var(--rose-gold); }
-        .area-name { font-weight: bold; font-size: 1.1em; }
         .status-badge { font-size: 0.75em; padding: 4px 10px; border-radius: 20px; font-weight: bold; }
         .status-open { background: var(--rose-gold); color: white; }
-        .status-soon { background: #eee; color: #999; }
+
+        /* --- お問い合わせフォーム --- */
+        #contact-section { background: #fff; padding: 40px 20px; border-top: 5px solid var(--rose-gold); }
+        .form-title { text-align: center; color: var(--rose-gold); font-weight: bold; margin-bottom: 20px; font-size: 1.2em; }
+        .form-control { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; margin-bottom: 15px; font-size: 1em; }
+        .btn-submit { width: 100%; background: var(--rose-gold); color: white; border: none; padding: 15px; border-radius: 30px; font-weight: bold; cursor: pointer; font-size: 1.1em; }
+        #thanks-msg { display: none; background: #e6fffa; color: #2c7a7b; padding: 15px; border-radius: 10px; text-align: center; font-weight: bold; margin-bottom: 20px; border: 2px solid #38b2ac; }
 
         /* --- フッター --- */
-        footer { background: #fff; padding: 40px 20px; border-top: 1px solid #eee; font-size: 0.85em; color: #666; line-height: 1.6; }
-        .footer-section { margin-bottom: 25px; }
-        .footer-title { font-weight: bold; color: #333; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        .policy-text { white-space: pre-wrap; margin-bottom: 20px; font-size: 0.8em; color: #777; }
-        .footer-info { margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; text-align: center; }
-        .affiliate-notice { font-size: 0.75em; color: #999; margin-top: 10px; }
+        footer { background: #444; color: #fff; padding: 40px 20px; text-align: center; font-size: 0.85em; }
+        .footer-link { color: #fff; text-decoration: underline; cursor: pointer; margin: 0 10px; }
+        .affiliate-text { font-size: 0.75em; color: #aaa; margin-top: 20px; display: block; }
+
+        /* --- モーダル --- */
+        #modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 6000; display: none; overflow-y: auto; padding-top: 50px; }
+        .modal-header { position: fixed; top: 0; width: 100%; padding: 10px; display: flex; justify-content: flex-end; background: #fff; z-index: 7000; box-sizing: border-box; }
+        .close-btn { background: #666; color: #fff; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-right: 20px; }
+        .modal-content { padding: 20px; max-width: 600px; margin: 0 auto; text-align: left; color: #333; line-height: 1.8; }
+        .modal-content h2 { color: var(--rose-gold); border-bottom: 2px solid var(--rose-gold); padding-bottom: 10px; }
+        .policy-section { margin-bottom: 25px; }
+        .policy-title { font-weight: bold; display: block; margin-bottom: 5px; font-size: 1.1em; color: #000; }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="menu-trigger">☰</div>
-        <img src="futae_net_final_logo.png" alt="futae.net" class="header-logo">
+        <div></div>
+        <img src="futae_net_final_logo.png" alt="logo" class="header-logo">
         <div class="header-panda">🐼</div>
     </header>
 
-    <main>
-        <div class="hero">
-            <div class="hero-title">広告の「安値」に騙されない。<br>娘に教えたい、二重整形の真実。</div>
-            <div class="hero-desc">🐼 1万件以上のリアルなクチコミと独自AIが、クリニックの「実勢価格」と「技術力」を暴きます。</div>
-        </div>
+    <div class="hero">
+        <div class="hero-title">広告の「安値」に騙されない。<br>娘に教えたい、二重整形の真実。</div>
+        <div style="font-size: 0.9em; color:#666; margin-top:15px;">🐼 1万件以上のリアルなクチコミと独自AIが、クリニックの「実勢価格」と「技術力」を暴きます。</div>
+    </div>
 
-        <div class="area-section">
-            <h3 style="text-align:center; color:var(--rose-gold);">エリアを選択</h3>
-            <a href="shinjuku.html" class="area-card active">
-                <span class="area-name">📍 新宿エリア</span>
-                <span class="status-badge status-open">分析完了・公開中</span>
-            </a>
-            <div class="area-card">
-                <span class="area-name">📍 池袋エリア</span>
-                <span class="status-badge status-soon">潜入調査中...</span>
-            </div>
-            <div class="area-card">
-                <span class="area-name">📍 渋谷・恵比寿エリア</span>
-                <span class="status-badge status-soon">潜入調査中...</span>
-            </div>
-        </div>
-
-        <div style="background:var(--pink-bg); padding:40px 20px; text-align:center;">
-            <p style="font-weight:bold; line-height:1.8;">「なけなしのバイト代を、正しいクリニックで使ってほしい」</p>
-            <p style="font-size:0.85em; color:#666;">二重整形を夢見る娘を持つ父親が、AIを味方にして作ったのがこの「Futae.net」です。広告費による忖度を一切排除し、現場のリアルな数字だけでランキングを作成しました。</p>
+    <main class="area-section">
+        <div id="thanks-msg">📮 お問い合わせありがとうございました！<br>内容を確認して、お返事するパン 🐼</div>
+        <h3 style="text-align:center; color:var(--rose-gold);">エリアを選択</h3>
+        <a href="shinjuku.html" class="area-card active">
+            <span style="font-weight:bold;">📍 新宿エリア</span>
+            <span class="status-badge status-open">分析完了・公開中</span>
+        </a>
+        <div class="area-card">
+            <span style="font-weight:bold; color:#999;">📍 池袋エリア</span>
+            <span class="status-badge" style="background:#eee; color:#999;">潜入調査中...</span>
         </div>
     </main>
 
+    <section id="contact-section">
+        <div class="form-title">📮 お問い合わせ</div>
+        <form action="https://formsubmit.co/info@futae.net" method="POST">
+            <input type="hidden" name="_next" value="https://futae.net/index.html#thanks">
+            <input type="hidden" name="_captcha" value="false">
+            <input type="text" name="name" class="form-control" placeholder="お名前（ニックネーム可）" required>
+            <input type="email" name="email" class="form-control" placeholder="メールアドレス" required>
+            <select name="type" class="form-control">
+                <option>サイトについて</option>
+                <option>料金の表示について</option>
+                <option>その他</option>
+            </select>
+            <textarea name="message" class="form-control" rows="5" placeholder="自由に入力してパン 🐼" required></textarea>
+            <button type="submit" class="btn-submit">問い合わせを届けるパン 🐼</button>
+        </form>
+    </section>
+
     <footer>
-        <div class="footer-section">
-            <div class="footer-title">プライバシーポリシー</div>
-            <div class="policy-text">
-1. 広告の配信について
-当サイトでは、第三者配信の広告サービスを利用したアフィリエイトプログラムを導入しています。広告主のウェブサイトへ遷移した後のサービス利用、商品購入等の取引は、利用者と広告主の間で行われるものであり、当サイトはその内容を保証するものではありません。
-
-2. アクセス解析ツールについて
-当サイトでは、サイトの利用状況を把握するためにGoogleによるアクセス解析ツール「Googleアナリティクス」を利用しています。このツールはデータの収集のためにCookie（クッキー）を使用していますが、このデータは匿名で収集されており、個人を特定するものではありません。
-
-3. 個人情報の利用目的
-お問い合わせフォームから取得したお名前（ニックネームを含む）やメールアドレスは、お問い合わせに対する回答や必要な情報を電子メール等でご連絡する場合にのみ利用し、これ以外の目的では利用いたしません。
-
-4. 免責事項
-当サイトで提供する情報は、独自の見解やAIによる分析、口コミに基づいたものであり、その正確性や安全性を保証するものではありません。美容整形の施術は医療行為であり、リスクを伴います。最終的な施術の決定は、必ず医師によるカウンセリングを受けた上で、ご自身の責任において行ってください。当サイトを利用したことにより生じた、いかなる損害についても運営者は一切の責任を負いません。
-
-5. 著作権・肖像権について
-当サイト内の文章、画像、独自ランキングのアルゴリズム等のコンテンツの著作権は、futae.net運営者に帰属します。無断転載・無用な二次利用は固く禁じます。
-            </div>
+        <div>
+            <span class="footer-link" onclick="openModal('policy')">プライバシーポリシー</span>
+            <span class="footer-link" onclick="openModal('operator')">運営者情報</span>
         </div>
-
-        <div class="footer-info">
-            <div><strong>運営者情報</strong></div>
-            <div style="margin-top:5px;">運営者：futae.net 運営事務局</div>
-            <div>連絡先：サイト内お問い合わせフォームよりご連絡ください</div>
-            <div class="affiliate-notice">本サイトはアフィリエイト広告を利用しています</div>
-        </div>
-        <div style="text-align:center; margin-top:20px; font-size:0.7em; color:#bbb;">&copy; 2026 futae.net</div>
+        <span class="affiliate-text">本サイトはアフィリエイト広告を利用しています</span>
+        <div style="margin-top:20px;">&copy; 2026 futae.net</div>
     </footer>
 
+    <div id="modal">
+        <div class="modal-header"><div class="close-btn" onclick="closeModal()">✕</div></div>
+        <div id="modal-content" class="modal-content"></div>
+    </div>
+
+    <script>
+        function openModal(type) {
+            const content = document.getElementById('modal-content');
+            if (type === 'policy') {
+                content.innerHTML = `
+                    <h2>プライバシーポリシー</h2>
+                    <div class="policy-section"><span class="policy-title">1. 広告の配信について</span>当サイトでは、第三者配信の広告サービスを利用したアフィリエイトプログラムを導入しています。広告主のウェブサイトへ遷移した後のサービス利用、商品購入等の取引は、利用者と広告主の間で行われるものであり、当サイトはその内容を保証するものではありません。</div>
+                    <div class="policy-section"><span class="policy-title">2. アクセス解析ツールについて</span>当サイトでは、サイトの利用状況を把握するためにGoogleによるアクセス解析ツール「Googleアナリティクス」を利用しています。このツールはデータの収集のためにCookie（クッキー）を使用していますが、このデータは匿名で収集されており、個人を特定するものではありません。</div>
+                    <div class="policy-section"><span class="policy-title">3. 個人情報の利用目的</span>お問い合わせフォームから取得したお名前（ニックネームを含む）やメールアドレスは、お問い合わせに対する回答や必要な情報を電子メール等でご連絡する場合にのみ利用し、これ以外の目的では利用いたしません。</div>
+                    <div class="policy-section"><span class="policy-title">4. 免責事項</span>当サイトで提供する情報は、独自の見解やAIによる分析、口コミに基づいたものであり、その正確性や安全性を保証するものではありません。美容整形の施術は医療行為であり、リスクを伴います。最終的な施術の決定は、必ず医師によるカウンセリングを受けた上で、ご自身の責任において行ってください。当サイトを利用したことにより生じた、いかなる損害についても運営者は一切の責任を負いません。</div>
+                    <div class="policy-section"><span class="policy-title">5. 著作権・肖像権について</span>当サイト内の文章、画像、独自ランキングのアルゴリズム等のコンテンツの著作権は、futae.net運営者に帰属します。無断転載・無用な二次利用は固く禁じます。</div>
+                `;
+            } else if (type === 'operator') {
+                content.innerHTML = `
+                    <h2>運営者情報</h2>
+                    <p><strong>運営者：</strong>futae.net 運営事務局</p>
+                    <p><strong>連絡先：</strong>サイト内お問い合わせフォームよりご連絡ください</p>
+                `;
+            }
+            document.getElementById('modal').style.display = 'block';
+        }
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
+        window.onload = function() { if(window.location.hash === "#thanks") document.getElementById('thanks-msg').style.display = 'block'; }
+    </script>
 </body>
 </html>
