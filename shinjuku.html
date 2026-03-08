@@ -410,6 +410,15 @@
             color: #555;
             margin: 15px 0;
         }
+
+        #wisdom-bubble {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        #wisdom-bubble::-webkit-scrollbar {
+            display: none;
+        }
     </style>
 </head>
 
@@ -481,12 +490,13 @@
         <div id="modal-body"></div>
     </div>
 
-    <div id="floating-panda" style="position:fixed; bottom:20px; right:20px; z-index:4000; visibility:hidden;"
-        onclick="speakWisdom()">
+    <div id="floating-panda"
+        style="position:fixed; bottom:20px; right:20px; z-index:4000; visibility:hidden; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: translateY(0);"
+        onclick="showNextWisdom(true)">
         <div id="wisdom-bubble"
-            style="display:none; position:absolute; bottom:80px; right:0; width:220px; background:#fff; border:3px solid var(--rose-gold); padding:15px; border-radius:20px; font-size:0.85em; font-weight:bold; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            style="opacity:0; transition:opacity 0.4s ease; position:absolute; bottom:80px; right:0; width:220px; max-height:220px; overflow-y:auto; background:#fff; border:3px solid var(--rose-gold); padding:15px; border-radius:20px; font-size:0.85em; font-weight:bold; box-shadow: 0 4px 15px rgba(0,0,0,0.1); line-height:1.6;">
         </div>
-        <div style="font-size: 70px; cursor:pointer;">🐼</div>
+        <div style="font-size: 70px; cursor:pointer; text-align:right;">🐼</div>
     </div>
 
     <footer>&copy; 2026 futae.net</footer>
@@ -535,7 +545,12 @@
                 const res = await fetch(wisdomCsvUrl);
                 if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
                 const txt = await res.text();
-                Papa.parse(txt, { header: true, complete: (r) => { wisdomData = r.data; } });
+                Papa.parse(txt, {
+                    header: true, complete: (r) => {
+                        wisdomData = r.data;
+                        startAutoWisdom();
+                    }
+                });
             } catch (e) {
                 console.warn('Wisdom data load failed:', e);
             }
@@ -550,6 +565,11 @@
         function sort(type) {
             document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('sort-' + type).classList.add('active');
+
+            if (type === 'review') {
+                showSpecialWisdom('クチコミ数だけで決めないパン、数が多いということは広告代もかなりかかっているパン', '⚠️ 警告');
+            }
+
             globalData.sort((a, b) => {
                 if (type === 'ai') return cleanNum(b.total_score) - cleanNum(a.total_score);
                 if (type === 'price') return cleanNum(a.actual_price) - cleanNum(b.actual_price) || (cleanNum(b.total_score) - cleanNum(a.total_score));
@@ -683,15 +703,64 @@
         function closeModal() { document.getElementById('detail-modal').style.display = 'none'; }
         function openMenu() { document.getElementById('side-menu').classList.add('open'); document.getElementById('menu-overlay').style.display = 'block'; }
         function closeMenu() { document.getElementById('side-menu').classList.remove('open'); document.getElementById('menu-overlay').style.display = 'none'; }
-        function togglePandaShow() { document.getElementById('floating-panda').classList.toggle('show'); }
-        function speakWisdom() {
-            if (!wisdomData.length) return;
-            const s = wisdomData[Math.floor(Math.random() * wisdomData.length)];
+        function togglePandaShow() {
+            const fp = document.getElementById('floating-panda');
+            fp.style.transform = fp.style.transform === 'translateY(150%)' ? 'translateY(0)' : 'translateY(150%)';
+        }
+
+        let wisdomTimer = null;
+        let fadeTimer = null;
+
+        function startAutoWisdom() {
+            if (wisdomTimer) clearTimeout(wisdomTimer);
+            showNextWisdom();
+        }
+
+        function getWeightedRandomWisdom() {
+            if (!wisdomData || !wisdomData.length) return null;
+            let pool = [];
+            let fallbackPool = [];
+            wisdomData.forEach(item => {
+                let p = parseInt(item.priority || item['優先度']);
+                if (isNaN(p)) p = 3;
+                let weight = p === 1 ? 5 : (p === 2 ? 3 : 1);
+                for (let i = 0; i < weight; i++) pool.push(item);
+                fallbackPool.push(item);
+            });
+            if (pool.length === 0) pool = fallbackPool;
+            return pool[Math.floor(Math.random() * pool.length)];
+        }
+
+        function displayWisdom(text, category) {
             const b = document.getElementById('wisdom-bubble');
-            b.innerText = s.Answer; b.style.display = 'block';
-            if (s.Category === "⚠️ 警告") b.style.borderColor = "var(--accent)";
-            else b.style.borderColor = "var(--rose-gold)";
-            setTimeout(() => b.style.display = 'none', 8000);
+            b.style.opacity = '0';
+            if (fadeTimer) clearTimeout(fadeTimer);
+            fadeTimer = setTimeout(() => {
+                b.style.display = 'block';
+                b.innerText = text;
+                b.style.fontSize = text.length > 50 ? '0.75em' : '0.85em';
+                if (category === "⚠️ 警告" || category === "警告") b.style.borderColor = "var(--accent)";
+                else b.style.borderColor = "var(--rose-gold)";
+                b.style.opacity = '1';
+                b.scrollTop = 0;
+            }, 400);
+        }
+
+        function showNextWisdom(manual = false) {
+            if (manual && wisdomTimer) clearTimeout(wisdomTimer);
+            const s = getWeightedRandomWisdom();
+            if (s) {
+                const keyword = s.Keyword || s['キーワード'] || s['keyword'] || 'パンダの知恵';
+                const answer = s.Answer || s['アンサー'] || s.answer || '';
+                displayWisdom(`${keyword} / ${answer}`, s.Category);
+            }
+            wisdomTimer = setTimeout(showNextWisdom, 15000);
+        }
+
+        function showSpecialWisdom(text, category) {
+            if (wisdomTimer) clearTimeout(wisdomTimer);
+            displayWisdom(text, category);
+            wisdomTimer = setTimeout(showNextWisdom, 15000);
         }
 
         init();
