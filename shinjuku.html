@@ -731,16 +731,23 @@
             return pool[Math.floor(Math.random() * pool.length)];
         }
 
-        function displayWisdom(text, category) {
+        function displayWisdom(keyword, answer, category) {
             const b = document.getElementById('wisdom-bubble');
             b.style.opacity = '0';
             if (fadeTimer) clearTimeout(fadeTimer);
             fadeTimer = setTimeout(() => {
                 b.style.display = 'block';
-                b.innerText = text;
-                b.style.fontSize = text.length > 50 ? '0.75em' : '0.85em';
+
+                const qHtml = `<div style="font-weight:bold; color:var(--accent); margin-bottom:5px;">Q. ${keyword}</div>`;
+                const aHtml = `<div style="font-weight:normal; color:#333;">A. ${answer}</div>`;
+                b.innerHTML = qHtml + aHtml;
+
+                const totalLen = (keyword + answer).length;
+                b.style.fontSize = totalLen > 50 ? '0.75em' : '0.85em';
+
                 if (category === "⚠️ 警告" || category === "警告") b.style.borderColor = "var(--accent)";
                 else b.style.borderColor = "var(--rose-gold)";
+
                 b.style.opacity = '1';
                 b.scrollTop = 0;
             }, 400);
@@ -752,14 +759,14 @@
             if (s) {
                 const keyword = s.Keyword || s['キーワード'] || s['keyword'] || 'パンダの知恵';
                 const answer = s.Answer || s['アンサー'] || s.answer || '';
-                displayWisdom(`${keyword} / ${answer}`, s.Category);
+                displayWisdom(keyword, answer, s.Category);
             }
             wisdomTimer = setTimeout(showNextWisdom, 15000);
         }
 
         function showSpecialWisdom(text, category) {
             if (wisdomTimer) clearTimeout(wisdomTimer);
-            displayWisdom(text, category);
+            displayWisdom("パンダからの警告", text, category);
             wisdomTimer = setTimeout(showNextWisdom, 15000);
         }
 
